@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Reflection;
 
 namespace eu.bayly.EADBasicNet.EAD {
   /// <summary>
@@ -248,5 +249,53 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// <summary>Supplement</summary>
     [Description("Supplement")]
     SUP,
+  }
+
+  /// <summary>
+  /// Represents the description of an enum.
+  /// </summary>
+  public class EnumDescriptor {
+    /// <summary>
+    /// Gets or sets the description of the enum.
+    /// </summary>
+    public string Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the enum.
+    /// </summary>
+    public string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the value of the enum.
+    /// </summary>
+    public int Value { get; set; }
+
+    /// <summary>
+    /// Gets a list of enum descriptors for the specified type.
+    /// </summary>
+    public static EnumDescriptor[] GetDescriptors(string name) {
+      return GetDescriptors(Type.GetType("eu.bayly.EADBasicNet.EAD." + name));
+    }
+
+    /// <summary>
+    /// Gets a list of enum descriptors for the specified type.
+    /// </summary>
+    public static EnumDescriptor[] GetDescriptors(Type t) {
+      var fields = t.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+
+      EnumDescriptor[] list = new EnumDescriptor[fields.Length];
+
+      for (int i = 0; i < fields.Length; i++) {
+        var desc = fields[i].GetCustomAttribute<DescriptionAttribute>();
+
+        list[i] = new EnumDescriptor() {
+          Description = desc == null ? fields[i].Name : desc.Description,
+          Name = fields[i].Name,
+          Value = Convert.ToInt32(fields[i].GetValue(null))
+        };
+      }
+
+      return list;
+    }
   }
 }

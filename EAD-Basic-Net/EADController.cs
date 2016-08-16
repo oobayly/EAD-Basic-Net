@@ -13,6 +13,22 @@ namespace eu.bayly.EADBasicNet {
   /// </summary>
   public class EADController : ApiController {
     /// <summary>
+    /// Gets a list of enum descriptors.
+    /// </summary>
+    [HttpPost]
+    public Response<EnumDescriptor[]> GetEnums([FromBody]string name) {
+      var response = new Response<EnumDescriptor[]>();
+
+      try {
+        response.Value = EnumDescriptor.GetDescriptors(name);
+      } catch (Exception ex) {
+        response.Error = ex.Message;
+      }
+
+      return response;
+    }
+
+    /// <summary>
     /// Searches the EAD website using the specified parameters.
     /// </summary>
     [HttpPost]
