@@ -160,6 +160,9 @@ namespace eu.bayly.EADBasicNet.EAD {
       return page < (pageCount - 1);
     }
 
+    /// <summary>
+    /// Searches the EAD website.
+    /// </summary>
     public static List<Document> Search(SearchArgs args) {
       // Authenticate only if session expired
       if (HasExpired && !Authenticate()) {
@@ -182,10 +185,6 @@ namespace eu.bayly.EADBasicNet.EAD {
       //list.Sort();
 
       return list;
-    }
-
-    public static Document Create(HtmlEntity html) {
-      throw new NotSupportedException();
     }
 
     /// <summary>

@@ -12,6 +12,7 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// <summary>Aeronautical Information Regulation and Control.</summary>
     AIRAC,
     /// <summary>Non-AIRAC.</summary>
+    [Description("Non-AIRAC")]
     NON_AIRAC
   }
 
@@ -187,22 +188,31 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// <summary>Any</summary>
     Any,
     /// <summary>English</summary>
+    [Description("English")]
     EN,
     /// <summary>French</summary>
+    [Description("French")]
     FR,
     /// <summary>Croation</summary>
+    [Description("Croation")]
     HR,
-    /// <summary>Lithuanian</summary>
-    LT,
     /// <summary>Latvian</summary>
+    [Description("Latvian")]
     LV,
+    /// <summary>Lithuanian</summary>
+    [Description("Lithuanian")]
+    LT,
     /// <summary>Norwegian</summary>
+    [Description("Norwegian")]
     NO,
     /// <summary>Romanian</summary>
+    [Description("Romanian")]
     RO,
     /// <summary>Slovak</summary>
+    [Description("Slovak")]
     SK,
     /// <summary>Serbian</summary>
+    [Description("Serbian")]
     SR,
   }
 
