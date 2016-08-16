@@ -1,0 +1,129 @@
+﻿using System;
+using System.IO;
+using System.Net;
+using System.Text.RegularExpressions;
+using System.Web;
+
+namespace eu.bayly.EADBasicNet.EAD {
+  /// <summary>
+  /// A base class which provides access to the EAD website.
+  /// </summary>
+  public abstract class EADBase {
+    #region Constants
+    /// <summary>
+    /// The uri where login credentials should be posted.
+    /// </summary>
+    protected const string LoginUri = "http://ead-website.ead-it.com/pamslight/login.do";
+
+    /// <summary>
+    /// The uri which is contains the search options.
+    /// </summary>
+    protected const string OptionsUri = "http://ead-website.ead-it.com/pamslight/protect/options.do;jsessionid=";
+
+    /// <summary>
+    /// The uri which is used to search EAD Basic.
+    /// </summary>
+    protected const string SearchUri = "http://ead-website.ead-it.com/pamslight/protect/query.do;jsessionid=";
+    #endregion
+
+    #region Properties
+    /// <summary>
+    /// Gets whether the EAD website session has expired.
+    /// </summary>
+    protected static bool HasExpired {
+      get {
+        if (string.IsNullOrEmpty(Session) || !ID.HasValue)
+          return true;
+
+        if (LastAuth.HasValue) {
+          return DateTime.Now.AddHours(-1) > LastAuth.Value;
+        } else {
+          return true;
+        }
+      }
+    }
+
+    /// <summary>
+    /// Gets or sets the ID used for making requests.
+    /// </summary>
+    protected static long? ID { get; private set; }
+
+    /// <summary>
+    /// Gets or sets the time when the last authentication was successful.
+    /// </summary>
+    protected static DateTime? LastAuth { get; private set; }
+
+    /// <summary>
+    /// Gets or sets the session string for making requests.
+    /// </summary>
+    protected static string Session { get; private set; }
+    #endregion
+
+    #region Methods
+    /// <summary>
+    /// Authenticates with the EAD website.
+    /// </summary>
+    protected static bool Authenticate() {
+      using (var client = new WebClient()) {
+        string response;
+        Match m;
+        
+        // Attempt to get the session
+        response = client.DownloadString(LoginUri + "?user=guest&password=guest");
+        if (!(m = Regex.Match(response, "redirecturl(\\s*)=(.*?)=(?<Session>.+?)\"")).Success) 
+          return false;
+
+        var session = m.Groups["Session"].Value;
+
+        // Attempt to get the timestamp ID for all requests
+        response = client.DownloadString(OptionsUri + session + "?org=");
+        if (!(m = Regex.Match(response, "name=\"id\".*value=\"(?<ID>[0-9]+)\"")).Success)
+          return false;
+
+        LastAuth = DateTime.Now;
+        Session = session;
+        ID = long.Parse(m.Groups["ID"].Value);
+      }
+
+      return true;
+    }
+
+    /// <summary>
+    /// Makes a request to the EAD website.
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="text">The response text.</param>
+    /// <returns>A flag indicating whether the request was successful.</returns>
+    protected static bool MakeRequest(HttpWebRequest request, out string text) {
+      // Authenticate only if session expired
+      if (HasExpired && !Authenticate()) {
+        throw new WebException("Not authenticated");
+      }
+
+      text = null;
+      HttpWebResponse response = null;
+      try {
+        response = (HttpWebResponse)request.GetResponse();
+        using (var stream = response.GetResponseStream()) {
+          using (var reader = new StreamReader(stream)) {
+            text = reader.ReadToEnd();
+          }
+        }
+      } finally {
+        if (response != null) {
+          response.Dispose();
+        }
+      }
+
+      // Test if the session has expired (PAMS-PU-003: Access denied)
+      if (text.Contains("PAMS-PU-003")) {
+        // Clear the session variables
+        Session = null;
+        return false;
+      } else {
+        return true;
+      }
+    }
+    #endregion
+  }
+}
