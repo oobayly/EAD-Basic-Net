@@ -1,17 +1,22 @@
-﻿using System;
+﻿using eu.bayly.EADBasicNet.EAD;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-
-using eu.bayly.EADBasicNet.EAD;
+using System.Web.Http.Description;
 
 namespace eu.bayly.EADBasicNet {
+  /// <summary>
+  /// The web service used for querying the EAD database.
+  /// </summary>
   public class EADController : ApiController {
     /// <summary>
     /// Searches the EAD website using the specified parameters.
     /// </summary>
+    [HttpPost]
+    [ResponseType(typeof(Document[]))]
     public Response<Document[]> Search([FromBody]SearchArgs args) {
       var response = new Response<Document[]>();
 
