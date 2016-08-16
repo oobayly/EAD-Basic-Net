@@ -182,7 +182,6 @@
     <Content Include="Scripts\knockout-3.2.0.debug.js" />
     <Content Include="Scripts\knockout-3.2.0.js" />
     <Content Include="Scripts\WebApiTestClient.js" />
-    <Content Include="WebForm1.aspx" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Areas\HelpPage\ApiDescriptionExtensions.cs" />
@@ -225,13 +224,6 @@
     <Compile Include="EADController.cs" />
     <Compile Include="Response.cs" />
     <Compile Include="WebApiConfig.cs" />
-    <Compile Include="WebForm1.aspx.cs">
-      <DependentUpon>WebForm1.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="WebForm1.aspx.designer.cs">
-      <DependentUpon>WebForm1.aspx</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
