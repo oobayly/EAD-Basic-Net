@@ -19,7 +19,7 @@ namespace eu.bayly.EADBasicNet {
       // /api/EAD/GetVehicle
       config.Routes.MapHttpRoute(
         name: "ActionApi",
-        routeTemplate: "{controller}/{action}"
+        routeTemplate: "api/{controller}/{action}"
         );
     }
   }
