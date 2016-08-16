@@ -2,173 +2,251 @@
 using System.ComponentModel;
 
 namespace eu.bayly.EADBasicNet.EAD {
+  /// <summary>
+  /// The Aeronautical Information Regulation and Control (AIRAC) type.
+  /// </summary>
   public enum AIRAC {
-    Any = 0,
+    /// <summary>Any</summary>
+    Any,
     /// <summary>Aeronautical Information Regulation and Control.</summary>
-    AIRAC = 1,
+    AIRAC,
     /// <summary>Non-AIRAC.</summary>
-    NON_AIRAC = 2,
+    NON_AIRAC
   }
 
+  /// <summary>
+  /// The aviation authority.
+  /// </summary>
   public enum Authority {
+    /// <summary>Greenland</summary>
     [Description("Greenland")]
-    BG = 1,
+    BG,
+    /// <summary>Iceland</summary>
     [Description("Iceland")]
-    BI = 2,
+    BI,
+    /// <summary>Kosovo</summary>
     [Description("Kosovo")]
-    BK = 3,
+    BK,
+    /// <summary>Eurocontrol</summary>
     [Description("Eurocontrol")]
-    E1 = 4,
+    E1,
+    /// <summary>Belgium</summary>
     [Description("Belgium")]
-    EB = 5,
+    EB,
+    /// <summary>Germany</summary>
     [Description("Germany")]
-    ED = 6,
+    ED,
+    /// <summary>Estonia</summary>
     [Description("Estonia")]
-    EE = 7,
+    EE,
+    /// <summary>Finland</summary>
     [Description("Finland")]
-    EF = 8,
+    EF,
+    /// <summary>United Kingdom</summary>
     [Description("United Kingdom")]
-    EG = 9,
+    EG,
+    /// <summary>Netherlands</summary>
     [Description("Netherlands")]
-    EH = 10,
+    EH,
+    /// <summary>Ireland</summary>
     [Description("Ireland")]
-    EI = 11,
+    EI,
+    /// <summary>Denmark</summary>
     [Description("Denmark")]
-    EK = 12,
+    EK,
+    /// <summary>Norway</summary>
     [Description("Norway")]
-    EN = 13,
+    EN,
+    /// <summary>Poland</summary>
     [Description("Poland")]
-    EP = 14,
+    EP,
+    /// <summary>Sweden</summary>
     [Description("Sweden")]
-    ES = 15,
+    ES,
+    /// <summary>Germany/AFSBW</summary>
     [Description("Germany/AFSBW")]
-    ET = 16,
+    ET,
+    /// <summary>Latvia</summary>
     [Description("Latvia")]
-    EV = 17,
+    EV,
+    /// <summary>Lithuania</summary>
     [Description("Lithuania")]
-    EY = 18,
+    EY,
+    /// <summary>Albania</summary>
     [Description("Albania")]
-    LA = 19,
+    LA,
+    /// <summary>Bulgaria</summary>
     [Description("Bulgaria")]
-    LB = 20,
+    LB,
+    /// <summary>Cyprus</summary>
     [Description("Cyprus")]
-    LC = 21,
+    LC,
+    /// <summary>Croatia</summary>
     [Description("Croatia")]
-    LD = 22,
+    LD,
+    /// <summary>Spain</summary>
     [Description("Spain")]
-    LE = 23,
+    LE,
+    /// <summary>France</summary>
     [Description("France")]
-    LF = 24,
+    LF,
+    /// <summary>Greece</summary>
     [Description("Greece")]
-    LG = 25,
+    LG,
+    /// <summary>Hungary</summary>
     [Description("Hungary")]
-    LH = 26,
+    LH,
+    /// <summary>Italy</summary>
     [Description("Italy")]
-    LI = 27,
+    LI,
+    /// <summary>Slovenia</summary>
     [Description("Slovenia")]
-    LJ = 28,
+    LJ,
+    /// <summary>Czech Republic</summary>
     [Description("Czech Republic")]
-    LK = 29,
+    LK,
+    /// <summary>Malta</summary>
     [Description("Malta")]
-    LM = 30,
+    LM,
+    /// <summary>Austria</summary>
     [Description("Austria")]
-    LO = 31,
+    LO,
+    /// <summary>Portugal</summary>
     [Description("Portugal")]
-    LP = 32,
+    LP,
+    /// <summary>Bosnia/Herzeg.</summary>
     [Description("Bosnia/Herzeg.")]
-    LQ = 33,
+    LQ,
+    /// <summary>Romania</summary>
     [Description("Romania")]
-    LR = 34,
+    LR,
+    /// <summary>Switzerland</summary>
     [Description("Switzerland")]
-    LS = 35,
+    LS,
+    /// <summary>Turkey</summary>
     [Description("Turkey")]
-    LT = 36,
+    LT,
+    /// <summary>Moldova</summary>
     [Description("Moldova")]
-    LU = 37,
+    LU,
+    /// <summary>Former Yugoslav Rep. of Macedonia</summary>
     [Description("Former Yugoslav Rep. of Macedonia")]
-    LW = 38,
+    LW,
+    /// <summary>Serbia and Montenegro</summary>
     [Description("Serbia and Montenegro")]
-    LY = 39,
+    LY,
+    /// <summary>Slovakia</summary>
     [Description("Slovakia")]
-    LZ = 40,
+    LZ,
+    /// <summary>Jordan</summary>
     [Description("Jordan")]
-    OJ = 41,
+    OJ,
+    /// <summary>Philippines</summary>
     [Description("Philippines")]
-    RP = 42,
+    RP,
+    /// <summary>Azerbaijan</summary>
     [Description("Azerbaijan")]
-    UB = 43,
+    UB,
+    /// <summary>Armenia</summary>
     [Description("Armenia")]
-    UD = 44,
+    UD,
+    /// <summary>Georgia</summary>
     [Description("Georgia")]
-    UG = 45,
+    UG,
+    /// <summary>Ukraine</summary>
     [Description("Ukraine")]
-    UK = 46,
+    UK,
+    /// <summary>Faroe Islands</summary>
     [Description("Faroe Islands")]
-    XX = 47,
+    XX,
   }
 
+  /// <summary>
+  /// The aviation authority type.
+  /// </summary>
   public enum AuthorityType {
-    Any = 0,
-    Civil = 1,
-    Military = 2,
+    /// <summary>Any</summary>
+    Any,
+    /// <summary>Civil</summary>
+    Civil,
+    /// <summary>Military</summary>
+    Military,
     /// <summary>Route Availability Document</summary>
     [Description("Route Availability Document")]
-    RAD = 3,
+    RAD,
     /// <summary>Visual Flight Rules</summary>
     [Description("Visual Flight Rules")]
-    VFR = 4,
+    VFR
   }
 
+  /// <summary>
+  /// The document language.
+  /// </summary>
   public enum Language {
-    Any = 0,
-    /// <summary>Latvian</summary>
-    CS = 1,
+    /// <summary>Any</summary>
+    Any,
     /// <summary>English</summary>
-    EN = 2,
+    EN,
     /// <summary>French</summary>
-    FR = 3,
+    FR,
     /// <summary>Croation</summary>
-    HR = 4,
+    HR,
+    /// <summary>Lithuanian</summary>
+    LT,
+    /// <summary>Latvian</summary>
+    LV,
+    /// <summary>Norwegian</summary>
+    NO,
+    /// <summary>Romanian</summary>
+    RO,
     /// <summary>Slovak</summary>
-    SK = 5,
+    SK,
     /// <summary>Serbian</summary>
-    SR = 6,
+    SR,
   }
 
+  /// <summary>
+  /// The Aeronautical Information Regulation and Control (AIRAC) part type.
+  /// </summary>
   public enum PartAIRAC {
-    Any = 0,
+    /// <summary>Any</summary>
+    Any,
     /// <summary>Aerodromes</summary>
     [Description("Aerodromes")]
-    AD = 1,
+    AD,
     /// <summary>En-route</summary>
     [Description("En-route")]
-    ENR = 2,
+    ENR,
     /// <summary>General</summary>
     [Description("General")]
-    GEN = 3,
+    GEN,
     /// <summary>None</summary>
-    NONE = 4,
+    NONE,
   }
 
+  /// <summary>
+  /// The document type.
+  /// </summary>
   public enum DocumentType {
-    Any = 0,
+    /// <summary>Any</summary>
+    Any,
     /// <summary>Aeronautical Information Circular</summary>
     [Description("Aeronautical Information Circular")]
-    AIC = 1,
+    AIC,
     /// <summary>Aeronautical Information Publication</summary>
     [Description("Aeronautical Information Publication")]
-    AIP = 2,
+    AIP,
     /// <summary>Amendment</summary>
     [Description("Amendment")]
-    AMDT = 3,
+    AMDT,
     /// <summary>Charts</summary>
     [Description("Charts")]
-    Charts = 4,
+    Charts,
     /// <summary>Route Availability Document</summary>
     [Description("Route Availability Document")]
-    RAD = 5,
+    RAD,
     /// <summary>Supplement</summary>
     [Description("Supplement")]
-    SUP = 6,
+    SUP,
   }
 }
