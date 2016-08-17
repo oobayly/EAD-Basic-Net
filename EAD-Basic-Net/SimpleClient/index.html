@@ -1,0 +1,336 @@
+﻿<html>
+<head>
+  <title>EAD Basic</title>
+
+  <meta name="viewport" content="width=device-width">
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/0.9.80/jsrender.min.js"></script>
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key="></script>
+
+  <script type="text/javascript" src="https://npmcdn.com/csvtojson@1.0.0/dist/csvtojson.min.js"></script>
+  <script type="text/javascript" src="https://npmcdn.com/xml2json-light@1.0.4/xml2json.min.js"></script>
+  <script type="text/javascript" src="https://npmcdn.com/geodesy@1.1.0/dms.js"></script>
+
+  <style type="text/css">
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      height: calc(100% - 20px);
+    }
+
+      .container > * {
+      }
+
+      .container .options {
+        height: auto;
+        padding-bottom: 10px;
+      }
+
+    .map {
+      flex: 1;
+    }
+
+    .info > * {
+      min-width: 300px;
+      margin: 10px 0 0 0;
+    }
+
+    .info h1 {
+      border-bottom: 1px solid black;
+    }
+
+    .info h2 {
+    }
+
+    .info .location {
+      display: flex;
+      flex-direction: row;
+    }
+
+      .info .location > * {
+        flex: 1;
+      }
+
+    .info .documents {
+      max-height: 200px;
+      overflow: auto;
+    }
+
+    .debug {
+      display: none;
+      background-color: rgba(255, 0, 0, .5);
+      overflow: auto;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+<div class="options">
+  <select id="country"></select>
+</div>
+<div class="map"></div>
+</div>
+<pre class="debug"></pre>
+
+<script type="text/x-jsrender" id="infoWindow">
+<div class="info">
+  <h1>{{html:ICAO}} - {{html:Name}}</h1>
+  <h2>{{html:City}}, {{html:Country}}</h2>
+  <h3 class="location">
+    <span class="lat">{{lat:Lat}}</span>
+    <span class="lon">{{lon:Lon}}</span>
+    <span class="elevation">{{number:Alt}} ft</span>
+  </h3>
+  <div class="documents">
+    {{for documents}}
+    <div>
+      <a href="{{attr:Uri}}" title="{{attr:Name}}" target="_blank">{{html:Title}}</a><br>
+      Effective {{date:Effective}}
+    </div>
+    {{/for}}
+  </div>
+</div>
+</script>
+
+<script type="text/javascript">
+$(document).ready(function () {
+  var airports = [];
+  var countries = [];
+  var map = null;
+  var markers = [];
+  var infoWindow = null;
+
+  var initialize = function () {
+    var config = JSON.parse(window.localStorage.getItem("mapConfig") || "{}");
+
+    map = new google.maps.Map($(".map")[0], {
+      center: config.center || { lat: 0, lng: 0 },
+      zoom: config.zoom || 6,
+      mapTypeId: config.mapTypeId || 'terrain'
+    });
+
+    map.addListener("maptypeid_changed", function (e) {
+      var config = JSON.parse(window.localStorage.getItem("mapConfig") || "{}");
+      config.mapTypeId = map.getMapTypeId();
+      window.localStorage.setItem("mapConfig", JSON.stringify(config));
+    });
+
+    $(window).on("unload", function (e) {
+      var config = {
+        center: map.getCenter(),
+        zoom: map.getZoom(),
+        mapTypeId: map.getMapTypeId()
+      };
+
+      window.localStorage.setItem("mapConfig", JSON.stringify(config));
+    });
+
+    getAirports(true);
+  };
+
+  var getAirports = function (remote) {
+    var url = remote ? "https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat" : "./airports.dat";
+    $.get(url)
+    .done(function (response) {
+      var converter = new csvtojson.Converter({
+        noheader: true,
+        headers: ["Index", "Name", "City", "Country", "IATA", "ICAO", "Lat", "Lon", "Alt", "TZ", "DST", "TZName"]
+      });
+      converter.fromString(response, function (err, result) {
+        populateAirports(result);
+      });
+    });
+  };
+
+  var onCountryChanged = function (e) {
+    var country = $("#country").val();
+
+    var list = $.grep(airports, function (item) {
+      return (item.Country == country) && item.ICAO.match(/^[A-Z]{4}$/);
+    });
+
+    // Remove all the existing markers
+    $.each(markers, function (index, item) {
+      item.setMap(null);
+    });
+
+    markers = [];
+    var bounds = new google.maps.LatLngBounds();
+    $.each(list, function (index, item) {
+      marker = new google.maps.Marker({
+        position: { lat: item.Lat, lng: item.Lon },
+        map: map,
+        title: item.ICAO + ": " + item.Name,
+        label: item.ICAO.substr(2, 1),
+        airport: item
+      });
+      marker.addListener("click", onMarkerClick);
+      markers.push(marker);
+      bounds.extend(marker.getPosition());
+    });
+
+    if (list.length == 1) {
+      map.setCenter({ lat: list[0].Lat, lng: list[0].Lon });
+      map.setZoom(10);
+    } else {
+      map.fitBounds(bounds);
+
+    }
+
+    window.localStorage.setItem("country", country);
+  };
+
+  var onMarkerClick = function (e) {
+    var marker = this;
+
+    if (!infoWindow) {
+      infoWindow = new google.maps.InfoWindow({});
+    }
+
+    if (!marker.airport.documents) {
+      searchEAD({
+        Authority: marker.airport.ICAO.substr(0, 2),
+        PartAIRAC: "AD",
+        Name: "*" + marker.airport.ICAO + "*"
+      })
+      .done(function (documents) {
+        marker.airport.documents = documents;
+        showInfo(marker);
+      })
+      .fail(function (error) {
+        console.log(error);
+        showInfo(marker);
+      });
+      return;
+    }
+
+    showInfo(marker);
+  };
+
+  var populateAirports = function (list) {
+    var temp = [];
+    $.each(list, function (index, item) {
+      if (temp.indexOf(item.Country) === -1)
+        temp.push(item.Country);
+    });
+
+    temp.sort();
+    temp.splice(0, 0, "Any Country");
+
+    airports = list;
+    countries = temp;
+
+    var select = $("#country");
+    select.find("option").remove();
+    $.each(countries, function (index, item) {
+      $("<option>", {
+        value: item,
+        text: item
+      })
+      .appendTo(select);
+    });
+
+    select.val(window.localStorage.getItem("country") || "Ireland");
+    select.on("change", onCountryChanged);
+    onCountryChanged();
+  }
+
+  var searchEAD = function (params) {
+    var data = {
+      Authority: "EG",
+      AuthorityType: "Civil",
+      Language: "Any",
+      Type: "Any",
+      PartAIRAC: "Any",
+      AIRAC: "Any",
+      Name: "",
+      Title: ""
+    };
+
+    data = $.extend(data, params);
+
+    var q = $.Deferred();
+
+    $.ajax(
+      "../api/EAD/Search",
+      {
+        method: "POST",
+        traditional: true,
+        data: data
+      }
+    )
+    .done(function (response, status, request) {
+      $.each(response, function (index, item) {
+        if (item.Effective) {
+          item.Effective = new Date(item.Effective);
+        }
+      });
+      q.resolve(response);
+    })
+    .fail(function (error) {
+      q.reject(error);
+    });
+
+    return q;
+  };
+
+  var showInfo = function (marker) {
+    if (infoWindow.airport !== marker.airport) {
+      infoWindow.airport = marker.airport;
+      infoWindow.setContent($("#infoWindow").render(marker.airport));
+    }
+
+    infoWindow.open(map, marker);
+  };
+
+  initialize();
+
+  $.views.converters({
+    date: function (val) {
+      if (val instanceof Date) {
+        return val.toLocaleDateString();
+      } else if (val) {
+        return val;
+      } else {
+        return "-";
+      }
+    },
+    datetime: function (val) {
+      if (val instanceof Date) {
+        return val.toLocaleString();
+      } else if (val) {
+        return val;
+      } else {
+        return "-";
+      }
+    },
+    json: function (val) {
+      return JSON.stringify(val, null, 2);
+    },
+    lat: function (val) {
+      return Dms.toLat(val, "dm", 2);
+    },
+    lon: function (val) {
+      return Dms.toLon(val, "dm", 2);
+    },
+    number: function (val) {
+      return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+  });
+});
+</script>
+  
+</body>
+</html>
