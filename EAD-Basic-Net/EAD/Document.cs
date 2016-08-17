@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace eu.bayly.EADBasicNet.EAD {
@@ -8,6 +9,10 @@ namespace eu.bayly.EADBasicNet.EAD {
   /// Represents an EAD document object.
   /// </summary>
   public class Document : IComparable<Document> {
+    #region Fields
+    private string name;
+    #endregion
+
     #region Properties
     /// <summary>
     /// Gets or sets the Aeronautical Information Regulation And Control (AIRAC) information for the document.
@@ -31,17 +36,30 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// <summary>
     /// Gets or sets the name of the document.
     /// </summary>
-    public string Name { get; set; }
+    public string Name {
+      get {
+        return name;
+      }
+      set {
+        name = value;
+        OnNameChanged();
+      }
+    }
 
     /// <summary>
-    /// Gets or sets the Uri to the document.
+    /// Gets or sets the string used for sorting.
     /// </summary>
-    public Uri Uri { get; set; }
+    private string SortName { get; set; }
 
     /// <summary>
     /// Gets or sets the title of the document.
     /// </summary>
     public string Title { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Uri to the document.
+    /// </summary>
+    public Uri Uri { get; set; }
     #endregion
 
     #region Constructors
@@ -63,7 +81,7 @@ namespace eu.bayly.EADBasicNet.EAD {
       // Extract the base url
       var uriMatch = Regex.Match(html, "url.*?=.*?(?<uri>http[^\"]+)");
 
-      var whitespace  = new Regex(@"\s\s+", RegexOptions.Compiled );
+      var whitespace = new Regex(@"\s\s+", RegexOptions.Compiled);
 
       var list = new List<Document>();
       pageCount = 0;
@@ -135,9 +153,41 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// Compares the current instance with another document.
     /// </summary>
     public int CompareTo(Document obj) {
-      return string.Compare(this.Name, obj.Name);
+      return string.Compare(this.SortName, obj.SortName);
     }
 
+    /// <summary>
+    /// Raised when the name property is changed.
+    /// </summary>
+    protected void OnNameChanged() {
+      if (name == null) {
+        SortName = null;
+        return;
+      }
+
+      /* Operate on the name - the last 3 chars (_XX)
+       * Split the name into it's components, pad out any numeric values
+       * to 5 chars, and recombine
+       */
+      string[] parts = name.Substring(0, name.Length - 3).Split('_', '-');
+      StringBuilder sb = new StringBuilder();
+
+      for (int i = 0; i < parts.Length; i++) {
+        int parsed;
+        if (int.TryParse(parts[i], out parsed)) {
+          sb.AppendFormat("{0:00000}", parsed);
+        } else {
+          sb.Append(parts[i]);
+        }
+        sb.Append("_");
+      }
+
+      SortName = sb.ToString();
+    }
+
+    /// <summary>
+    /// Returns a human readable representation of the document object.
+    /// </summary>
     public override string ToString() {
       return "{Title: " + Title + "}";
     }
