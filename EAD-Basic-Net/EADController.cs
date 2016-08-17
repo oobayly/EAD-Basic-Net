@@ -11,21 +11,24 @@ namespace eu.bayly.EADBasicNet {
   /// <summary>
   /// The web service used for querying the EAD database.
   /// </summary>
-  public class EADController : ApiController {
+  public class EADController : ApiControllerBase {
     /// <summary>
     /// Gets a list of enum descriptors.
     /// </summary>
     [HttpPost]
-    public Response<EnumDescriptor[]> GetEnums([FromBody]string name) {
-      var response = new Response<EnumDescriptor[]>();
+    [ResponseType(typeof(EnumDescriptor[]))]
+    public IHttpActionResult GetEnums([FromBody]string name) {
 
       try {
-        response.Value = EnumDescriptor.GetDescriptors(name);
-      } catch (Exception ex) {
-        response.Error = ex.Message;
-      }
+        return Ok(EnumDescriptor.GetDescriptors(name));
 
-      return response;
+      } catch (NullReferenceException) {
+        return BadRequest(string.Format("'{0}' is not a valid enumeration.", name));
+
+      } catch (Exception ex) {
+        return InternalServerError(ex);
+
+      }
     }
 
     /// <summary>
@@ -33,16 +36,24 @@ namespace eu.bayly.EADBasicNet {
     /// </summary>
     [HttpPost]
     [ResponseType(typeof(Document[]))]
-    public Response<Document[]> Search([FromBody]SearchArgs args) {
-      var response = new Response<Document[]>();
-
+    public IHttpActionResult Search([FromBody]SearchArgs args) {
       try {
-        response.Value = args.Search().ToArray();
-      } catch (Exception ex) {
-        response.Error = ex.Message;
-      }
+        return Ok(args.Search().ToArray());
 
-      return response;
+      } catch (WebException ex) {
+        var resp = ex.Response as HttpWebResponse;
+        string message;
+        if (resp == null) {
+          message = "The remote server returned an error.";
+        } else {
+          message = string.Format("The remote server returned a {0} error.", resp.StatusCode);
+        }
+        return InternalServerError(ex, message);
+
+      } catch (Exception ex) {
+        return InternalServerError(ex);
+
+      }
     }
   }
 }

@@ -221,8 +221,10 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="ApiControllerBase.cs" />
     <Compile Include="EAD\Document.cs" />
     <Compile Include="EAD\EADBase.cs" />
+    <Compile Include="EAD\EADException.cs" />
     <Compile Include="EAD\Enumerations.cs" />
     <Compile Include="EAD\SearchArgs.cs" />
     <Compile Include="ExtensionMethods.cs" />
@@ -231,7 +233,6 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EADController.cs" />
-    <Compile Include="Response.cs" />
     <Compile Include="WebApiConfig.cs" />
   </ItemGroup>
   <ItemGroup>

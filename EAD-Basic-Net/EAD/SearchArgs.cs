@@ -108,10 +108,11 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// <summary>
     /// Searches the EAD website using the current search parameters.
     /// </summary>
+    /// <exception cref="EADException">The EAD website returned an error.</exception>
     public Document[] Search() {
       // Authenticate only if session expired
       if (HasExpired && !Authenticate()) {
-        throw new WebException("Not authenticated");
+        throw new WebException("Not authenticated.");
       }
 
       var list = new List<Document>();

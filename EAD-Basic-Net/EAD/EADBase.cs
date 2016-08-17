@@ -94,10 +94,11 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// <param name="request"></param>
     /// <param name="text">The response text.</param>
     /// <returns>A flag indicating whether the request was successful.</returns>
+    /// <exception cref="EADException">The EAD website returned an error.</exception>
     protected static bool MakeRequest(HttpWebRequest request, out string text) {
       // Authenticate only if session expired
       if (HasExpired && !Authenticate()) {
-        throw new WebException("Not authenticated");
+        throw new WebException("Not authenticated.");
       }
 
       text = null;
