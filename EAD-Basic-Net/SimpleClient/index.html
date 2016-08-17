@@ -53,15 +53,28 @@
     .info .location {
       display: flex;
       flex-direction: row;
+      max-width: 250px;
     }
 
-      .info .location > * {
-        flex: 1;
-      }
+    .info .location > * {
+      flex: 1;
+    }
 
     .info .documents {
       max-height: 200px;
       overflow: auto;
+    }
+
+    .info .documents > div+div {
+      margin-top: 5px;
+    }
+
+    .info .documents a {
+      white-space: nowrap;
+    }
+
+    .info .documents .effective {
+      font-size: smaller;
     }
 
     .debug {
@@ -97,7 +110,7 @@
     {{for documents}}
     <div>
       <a href="{{attr:Uri}}" title="{{attr:Name}}" target="_blank">{{html:Title}}</a><br>
-      Effective {{date:Effective}}
+      <span class="effective" title="Effective from">{{date:Effective}}</span>
     </div>
     {{/for}}
   </div>
