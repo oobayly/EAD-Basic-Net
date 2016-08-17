@@ -63,6 +63,8 @@ namespace eu.bayly.EADBasicNet.EAD {
       // Extract the base url
       var uriMatch = Regex.Match(html, "url.*?=.*?(?<uri>http[^\"]+)");
 
+      var whitespace  = new Regex(@"\s\s+", RegexOptions.Compiled );
+
       var list = new List<Document>();
       pageCount = 0;
 
@@ -113,7 +115,7 @@ namespace eu.bayly.EADBasicNet.EAD {
           // Document title
           node = row.SelectSingleNode("td[contains(@title, 'Show Document Information')]");
           if (node != null) {
-            item.Title = System.Web.HttpUtility.HtmlDecode(node.InnerText.Trim());
+            item.Title = whitespace.Replace(System.Web.HttpUtility.HtmlDecode(node.InnerText.Trim()), " ");
           }
 
           if (!item.IsEmpty)
@@ -133,7 +135,11 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// Compares the current instance with another document.
     /// </summary>
     public int CompareTo(Document obj) {
-      return string.Compare(this.Title, obj.Title);
+      return string.Compare(this.Name, obj.Name);
+    }
+
+    public override string ToString() {
+      return "{Title: " + Title + "}";
     }
     #endregion
   }

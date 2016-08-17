@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 
 namespace eu.bayly.EADBasicNet.EAD {
@@ -130,8 +131,8 @@ namespace eu.bayly.EADBasicNet.EAD {
         }
       }
 
+     // return list.OrderBy(a => a.Name).ToArray();
       list.Sort();
-
       return list.ToArray();
     }
     #endregion
