@@ -37,7 +37,7 @@ namespace eu.bayly.EADBasicNet {
       var response = new Response<Document[]>();
 
       try {
-        response.Value = Document.Search(args).ToArray();
+        response.Value = args.Search().ToArray();
       } catch (Exception ex) {
         response.Error = ex.Message;
       }
