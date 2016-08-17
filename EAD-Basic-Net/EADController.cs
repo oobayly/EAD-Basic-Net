@@ -27,7 +27,7 @@ namespace eu.bayly.EADBasicNet {
       try {
         var fields = type.GetFields(BindingFlags.Public | BindingFlags.Static);
 
-        var list = new Dictionary<Enum, string>();
+        var list = new System.Collections.Hashtable();
         for (int i = 0; i < fields.Length; i++) {
           var desc = fields[i].GetCustomAttribute<DescriptionAttribute>();
           Enum value = (Enum)fields[i].GetValue(null);
