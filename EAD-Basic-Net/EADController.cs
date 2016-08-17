@@ -15,9 +15,9 @@ namespace eu.bayly.EADBasicNet {
     /// <summary>
     /// Gets a list of enum descriptors.
     /// </summary>
-    [HttpPost]
+    [HttpGet]
     [ResponseType(typeof(EnumDescriptor[]))]
-    public IHttpActionResult GetEnums([FromBody]string name) {
+    public IHttpActionResult GetEnums(string name) {
 
       try {
         return Ok(EnumDescriptor.GetDescriptors(name));
@@ -36,7 +36,7 @@ namespace eu.bayly.EADBasicNet {
     /// </summary>
     [HttpPost]
     [ResponseType(typeof(Document[]))]
-    public IHttpActionResult Search([FromBody]SearchArgs args) {
+    public IHttpActionResult Search([FromBody] SearchArgs args) {
       try {
         return Ok(args.Search().ToArray());
 
