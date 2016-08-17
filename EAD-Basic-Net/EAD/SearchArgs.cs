@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -12,16 +14,19 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// <summary>
     /// Gets or sets which AIRAC information to search for.
     /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
     public AIRAC AIRAC { get; set; }
 
     /// <summary>
     /// Gets or sets the authority to search for.
     /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
     public Authority Authority { get; set; }
 
     /// <summary>
     /// Gets or sets the type of authority to search for.
     /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
     public AuthorityType AuthorityType { get; set; }
 
     /// <summary>
@@ -32,6 +37,7 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// <summary>
     /// Gets or sets the language to search for.
     /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
     public Language Language { get; set; }
 
     /// <summary>
@@ -42,6 +48,7 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// <summary>
     /// Gets or sets the part-AIRAC information to search for.
     /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
     public PartAIRAC PartAIRAC { get; set; }
 
     /// <summary>
@@ -52,6 +59,7 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// <summary>
     /// Gets or sets the type of document to search for.
     /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
     public DocumentType Type { get; set; }
     #endregion
 

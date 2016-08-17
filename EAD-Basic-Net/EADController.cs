@@ -1,9 +1,11 @@
 ﻿using eu.bayly.EADBasicNet.EAD;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Web.Http;
 using System.Web.Http.Description;
 
@@ -16,14 +18,23 @@ namespace eu.bayly.EADBasicNet {
     /// Gets a list of enum descriptors.
     /// </summary>
     [HttpGet]
-    [ResponseType(typeof(EnumDescriptor[]))]
+    [ResponseType(typeof(Dictionary<Enum, string>))]
     public IHttpActionResult GetEnums(string name) {
+      var type = Type.GetType("eu.bayly.EADBasicNet.EAD." + name);
+      if (type == null)
+        return BadRequest(string.Format("'{0}' is not a valid enumeration.", name));
 
       try {
-        return Ok(EnumDescriptor.GetDescriptors(name));
+        var fields = type.GetFields(BindingFlags.Public | BindingFlags.Static);
 
-      } catch (NullReferenceException) {
-        return BadRequest(string.Format("'{0}' is not a valid enumeration.", name));
+        var list = new Dictionary<Enum, string>();
+        for (int i = 0; i < fields.Length; i++) {
+          var desc = fields[i].GetCustomAttribute<DescriptionAttribute>();
+          Enum value = (Enum)fields[i].GetValue(null);
+          list[value] = desc == null ? fields[i].Name : desc.Description;
+        }
+
+        return Ok(list);
 
       } catch (Exception ex) {
         return InternalServerError(ex);
