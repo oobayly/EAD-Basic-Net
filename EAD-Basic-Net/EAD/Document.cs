@@ -17,7 +17,7 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// <summary>
     /// Gets or sets the Aeronautical Information Regulation And Control (AIRAC) information for the document.
     /// </summary>
-    public string AIRAC { get; set; }
+    public AIRAC? AIRAC { get; set; }
 
     /// <summary>
     /// Gets or sets the effective date of the document.
@@ -34,6 +34,11 @@ namespace eu.bayly.EADBasicNet.EAD {
     }
 
     /// <summary>
+    /// Gets or sets the document's language.
+    /// </summary>
+    public Language? Language { get; set; }
+
+    /// <summary>
     /// Gets or sets the name of the document.
     /// </summary>
     public string Name {
@@ -47,6 +52,11 @@ namespace eu.bayly.EADBasicNet.EAD {
     }
 
     /// <summary>
+    /// Gets or sets the part-AIRAC type of the document.
+    /// </summary>
+    public PartAIRAC? PartAIRAC { get; set; }
+
+    /// <summary>
     /// Gets or sets the string used for sorting.
     /// </summary>
     private string SortName { get; set; }
@@ -55,6 +65,11 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// Gets or sets the title of the document.
     /// </summary>
     public string Title { get; set; }
+
+    /// <summary>
+    /// Gets or sets what type the document is.
+    /// </summary>
+    public DocumentType? Type { get; set; }
 
     /// <summary>
     /// Gets or sets the Uri to the document.
@@ -121,13 +136,27 @@ namespace eu.bayly.EADBasicNet.EAD {
             string js = node.SelectSingleNode("a").Attributes["href"].Value.Trim();
             int first = js.IndexOf("&quot;");
             int last = js.IndexOf("&quot;", first + 1);
-            item.Uri = new Uri(baseUri + "/" + js.Substring(first + 6, last - first - 6));
-          }
+            js = js.Substring(first + 6, last - first - 6);
+            item.Uri = new Uri(baseUri + "/" + js);
 
-          // AIRAC (optional)
-          node = row.SelectSingleNode("td[contains(@title, 'AIRAC')]");
-          if (node != null) {
-            item.AIRAC = node.InnerText.Trim();
+            // ENX7SHJ56S2BE/EN/Charts/AD/AIRAC/EI_AD_2_EIDW_24-10_en_2012-12-13.pdf
+            var parts = js.Split('/');
+
+            Language lang;
+            if (Enum.TryParse<Language>(parts[1], out lang))
+              item.Language = lang;
+
+            DocumentType type;
+            if (Enum.TryParse<DocumentType>(parts[2], out type))
+              item.Type = type;
+
+            PartAIRAC part;
+            if (Enum.TryParse<PartAIRAC>(parts[3], out part))
+              item.PartAIRAC = part;
+
+            AIRAC airac;
+            if (Enum.TryParse<AIRAC>(parts[4], out airac))
+              item.AIRAC = airac;
           }
 
           // Document title
