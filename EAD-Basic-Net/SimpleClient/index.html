@@ -150,11 +150,17 @@ $(document).ready(function () {
       window.localStorage.setItem("mapConfig", JSON.stringify(config));
     });
 
-    getAirports(true);
+    getAirports(true)
+    .then(function () {
+      return getCountries(true);
+    });
   };
 
   var getAirports = function (remote) {
     var url = remote ? "https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat" : "./airports.dat";
+
+    var q = $.Deferred();
+
     $.get(url)
     .done(function (response) {
       var converter = new csvtojson.Converter({
@@ -162,17 +168,63 @@ $(document).ready(function () {
         headers: ["Index", "Name", "City", "Country", "IATA", "ICAO", "Lat", "Lon", "Alt", "TZ", "DST", "TZName"]
       });
       converter.fromString(response, function (err, result) {
-        populateAirports(result);
+        airports = result;
+        q.resolve();
       });
     });
+
+    return q.promise();
+  };
+
+  var getCountries = function (ead) {
+    var q = $.Deferred();
+
+    if (ead) {
+      $.get("../api/EAD/GetEnums", { name: "Authority" })
+      .done(function (response) {
+        var select = $("#country");
+        select.find("option").remove();
+
+        var temp = [];
+        $.each(response, function (key, item) {
+          temp.push(new Option(item, key));
+        });
+        temp.sort(function (a, b) {
+          return a.text.localeCompare(b.text);
+        });
+
+        $.each(temp, function (index, item) {
+          $(item).appendTo(select);
+        })
+
+        select.val(window.localStorage.getItem("country") || "EI");
+        select.on("change", onCountryChanged);
+        onCountryChanged();
+
+        q.resolve();
+      });
+
+    } else {
+      populateAirports();
+      q.resolve();
+    }
+
+    return q.promise();
   };
 
   var onCountryChanged = function (e) {
-    var country = $("#country").val();
+    var country = $("#country").val() || "";
 
-    var list = $.grep(airports, function (item) {
-      return (item.Country == country) && item.ICAO.match(/^[A-Z]{4}$/);
-    });
+    var list;
+    if (country.length == 2) {
+      var list = $.grep(airports, function (item) {
+        return (item.ICAO.indexOf(country) === 0) && item.ICAO.match(/^[A-Z]{4}$/);
+      });
+    } else {
+      var list = $.grep(airports, function (item) {
+        return (item.Country == country) && item.ICAO.match(/^[A-Z]{4}$/);
+      });
+    }
 
     // Remove all the existing markers
     $.each(markers, function (index, item) {
@@ -215,7 +267,7 @@ $(document).ready(function () {
     if (!marker.airport.documents) {
       searchEAD({
         Authority: marker.airport.ICAO.substr(0, 2),
-        PartAIRAC: "AD",
+        //PartAIRAC: "AD",
         Name: "*" + marker.airport.ICAO + "*"
       })
       .done(function (documents) {
@@ -232,9 +284,9 @@ $(document).ready(function () {
     showInfo(marker);
   };
 
-  var populateAirports = function (list) {
+  var populateAirports = function () {
     var temp = [];
-    $.each(list, function (index, item) {
+    $.each(airports, function (index, item) {
       if (temp.indexOf(item.Country) === -1)
         temp.push(item.Country);
     });
@@ -242,7 +294,6 @@ $(document).ready(function () {
     temp.sort();
     temp.splice(0, 0, "Any Country");
 
-    airports = list;
     countries = temp;
 
     var select = $("#country");
@@ -263,7 +314,7 @@ $(document).ready(function () {
   var searchEAD = function (params) {
     var data = {
       Authority: "EG",
-      AuthorityType: "Civil",
+      AuthorityType: "Any",
       Language: "Any",
       Type: "Any",
       PartAIRAC: "Any",
