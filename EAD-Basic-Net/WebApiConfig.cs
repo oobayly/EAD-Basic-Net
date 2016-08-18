@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
@@ -21,6 +22,8 @@ namespace eu.bayly.EADBasicNet {
         name: "ActionApi",
         routeTemplate: "api/{controller}/{action}"
         );
+
+      config.Formatters.JsonFormatter.SerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
     }
   }
 }
