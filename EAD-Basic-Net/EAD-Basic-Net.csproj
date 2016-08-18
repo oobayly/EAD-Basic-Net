@@ -229,6 +229,10 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="ApiControllerBase.cs" />
     <Compile Include="AWC\Enumerations.cs" />
+    <Compile Include="AWC\METAR.cs" />
+    <Compile Include="AWC\QualityControlFlags.cs" />
+    <Compile Include="AWC\Response.cs" />
+    <Compile Include="AWC\SkyCondition.cs" />
     <Compile Include="AWC\Station.cs" />
     <Compile Include="AWCController.cs" />
     <Compile Include="CachedSearch.cs" />

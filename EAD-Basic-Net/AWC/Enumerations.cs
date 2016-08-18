@@ -3,6 +3,53 @@ using System.ComponentModel;
 
 namespace eu.bayly.EADBasicNet.AWC {
   /// <summary>
+  /// The type of cloud covers used in METAR/TAF observations.
+  /// </summary>
+  public enum CloudCover {
+    /// <summary>Invlid value.</summary>
+    Invalid,
+
+    /// <summary>Ceiling and visibility okay.</summary>
+    [Description("Ceiling and visibility okay")]
+    CAVOK,
+
+    /// <summary>No cloud / Sky clear.</summary>
+    [Description("Sky clear")]
+    SKC,
+    /// <summary>No clouds below 12,000 ft.</summary>
+    [Description("No clouds below 12,000 ft")]
+    CLR,
+    /// <summary>No significant cloud.</summary>
+    [Description("No significant cloud")]
+    NSC,
+    /// <summary>Few: 1-2 oktas</summary>
+    [Description("Few")]
+    FEW,
+    /// <summary>Scattered: 3-4 oktas.</summary>
+    [Description("Scattered")]
+    SCT,
+    /// <summary>Broken: 5-7 oktas.</summary>
+    [Description("Broken")]
+    BKN,
+    /// <summary>Overcast: 8 oktas.</summary>
+    [Description("Overcast")]
+    OVC,
+    /// <summary>Clouds cannot be seen.</summary>
+    [Description("Clouds cannot be seen")]
+    VV
+  }
+
+  /// <summary>
+  /// The type of METAR observation.
+  /// </summary>
+  public enum METARType {
+    /// <summary>Regular METAR observation.</summary>
+    METAR,
+    /// <summary>Special weather observation.</summary>
+    SPECI
+  }
+
+  /// <summary>
   /// Attributes that a weather station may have.
   /// </summary>
   [Flags]
