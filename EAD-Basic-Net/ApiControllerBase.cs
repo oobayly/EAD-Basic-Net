@@ -1,14 +1,65 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Description;
 
 namespace eu.bayly.EADBasicNet {
   /// <summary>
   /// Extends properties and methods on the stock ApiController.
   /// </summary>
   public abstract class ApiControllerBase : ApiController {
+    /// <summary>
+    /// Gets the Enumeration namespace.
+    /// </summary>
+    protected abstract string Namespace { get; }
+
+    /// <summary>
+    /// Gets the AppData directory for the current controller.
+    /// </summary>
+    /// <returns></returns>
+    protected DirectoryInfo GetAppData() {
+      var dir = new DirectoryInfo(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/App_Data"), Namespace));
+      if (!dir.Exists) {
+        dir.Create();
+        dir.Refresh();
+      }
+
+      return dir;
+    }
+
+    /// <summary>
+    /// Gets the enums for the specified type.
+    /// </summary>
+    [HttpGet]
+    [ResponseType(typeof(Dictionary<Enum, string>))]
+    public IHttpActionResult GetEnums(string name) {
+      var type = Type.GetType(Namespace + "." + name);
+      if (type == null)
+        return BadRequest(string.Format("'{0}' is not a valid enumeration.", name));
+
+      try {
+        var fields = type.GetFields(BindingFlags.Public | BindingFlags.Static);
+
+        var list = new System.Collections.Hashtable();
+        for (int i = 0; i < fields.Length; i++) {
+          var desc = fields[i].GetCustomAttribute<DescriptionAttribute>();
+          Enum value = (Enum)fields[i].GetValue(null);
+          list[value] = desc == null ? fields[i].Name : desc.Description;
+        }
+
+        return Ok(list);
+
+      } catch (Exception ex) {
+        return InternalServerError(ex);
+
+      }
+    }
+
     /// <summary>
     /// Creates an System.Web.Http.Results.InternalServerErrorResult (500 Internal Server Error).
     /// </summary>
