@@ -46,7 +46,7 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// <summary>
     /// Gets or sets the ID used for making requests.
     /// </summary>
-    protected static long? ID { get; private set; }
+    public static long? ID { get; private set; }
 
     /// <summary>
     /// Gets or sets the time when the last authentication was successful.

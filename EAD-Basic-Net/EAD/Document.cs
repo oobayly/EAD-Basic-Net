@@ -13,6 +13,11 @@ namespace eu.bayly.EADBasicNet.EAD {
   public class Document : IComparable<Document> {
     #region Fields
     private string name;
+
+    /// <summary>
+    /// The Unix Epoch
+    /// </summary>
+    private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     #endregion
 
     #region Properties
@@ -72,6 +77,11 @@ namespace eu.bayly.EADBasicNet.EAD {
     private string SortName { get; set; }
 
     /// <summary>
+    /// Gets or sets the documents timestamp.
+    /// </summary>
+    public DateTime Timestamp { get; set; }
+
+    /// <summary>
     /// Gets or sets the title of the document.
     /// </summary>
     public string Title { get; set; }
@@ -97,7 +107,7 @@ namespace eu.bayly.EADBasicNet.EAD {
     #endregion
 
     #region Methods
-       /// <summary>
+    /// <summary>
     /// Creates a list of documents from the specified HTHML response.
     /// </summary>
     /// <param name="html">The HTHML response from the EAD website.</param>
@@ -124,6 +134,8 @@ namespace eu.bayly.EADBasicNet.EAD {
       var list = new List<Document>();
       pageCount = 0;
 
+      DateTime timestamp = UnixEpoch.AddMilliseconds(EADBase.ID.Value);
+
       if (uriMatch.Success) {
         string baseUri = uriMatch.Groups["uri"].Value.Trim();
         var doc = new HtmlDocument();
@@ -133,7 +145,9 @@ namespace eu.bayly.EADBasicNet.EAD {
         HtmlNodeCollection rows = doc.DocumentNode.SelectNodes("/html/body/table[@class='list']/tr");
 
         foreach (HtmlNode row in rows) {
-          var item = new Document();
+          var item = new Document() {
+            Timestamp = timestamp
+          };
 
           HtmlNodeCollection cells = row.SelectNodes("td");
           HtmlNode node;
