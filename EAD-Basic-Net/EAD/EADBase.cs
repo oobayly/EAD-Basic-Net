@@ -63,7 +63,7 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// <summary>
     /// Authenticates with the EAD website.
     /// </summary>
-    protected static bool Authenticate() {
+    protected bool Authenticate() {
       using (var client = new WebClient()) {
         string response;
         Match m;
@@ -89,40 +89,36 @@ namespace eu.bayly.EADBasicNet.EAD {
     }
 
     /// <summary>
+    /// Creates the HttpWebRequest for the specified Uri.
+    /// </summary>
+    protected abstract HttpWebRequest CreateRequest(string uri, object args);
+
+    /// <summary>
     /// Makes a request to the EAD website.
     /// </summary>
-    /// <param name="request"></param>
-    /// <param name="text">The response text.</param>
-    /// <returns>A flag indicating whether the request was successful.</returns>
+    /// <param name="uri">The Uri being reqested.</param>
     /// <exception cref="EADException">The EAD website returned an error.</exception>
-    protected static bool MakeRequest(HttpWebRequest request, out string text) {
+    protected string MakeRequest(string uri, object args) {
       // Authenticate only if session expired
       if (HasExpired && !Authenticate()) {
         throw new WebException("Not authenticated.");
       }
 
-      text = null;
-      HttpWebResponse response = null;
-      try {
-        response = (HttpWebResponse)request.GetResponse();
+      var request = CreateRequest(uri, args);
+      string text;
+      using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
         using (var stream = response.GetResponseStream()) {
           using (var reader = new StreamReader(stream)) {
             text = reader.ReadToEnd();
           }
         }
-      } finally {
-        if (response != null) {
-          response.Dispose();
-        }
       }
 
       // Test if the session has expired (PAMS-PU-003: Access denied)
       if (text.Contains("PAMS-PU-003")) {
-        // Clear the session variables
-        Session = null;
-        return false;
+        return MakeRequest(uri, args);
       } else {
-        return true;
+        return text;
       }
     }
     #endregion
