@@ -92,6 +92,16 @@ namespace eu.bayly.EADBasicNet.EAD {
     #endregion
 
     #region Methods
+       /// <summary>
+    /// Creates a list of documents from the specified HTHML response.
+    /// </summary>
+    /// <param name="html">The HTHML response from the EAD website.</param>
+    /// <returns>The list of parsed documents.</returns>
+    public static Document[] FromHtml(string html) {
+      int pageCount;
+      return FromHtml(html, out pageCount);
+    }
+
     /// <summary>
     /// Creates a list of documents from the specified HTHML response.
     /// </summary>
