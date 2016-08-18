@@ -97,8 +97,9 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// Makes a request to the EAD website.
     /// </summary>
     /// <param name="uri">The Uri being reqested.</param>
+    /// <param name="args">The optional arguments to EADBase.CreateRequest.</param>
     /// <exception cref="EADException">The EAD website returned an error.</exception>
-    protected string MakeRequest(string uri, object args) {
+    protected string MakeRequest(string uri, object args = null) {
       // Authenticate only if session expired
       if (HasExpired && !Authenticate()) {
         throw new WebException("Not authenticated.");
