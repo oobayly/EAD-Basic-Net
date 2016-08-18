@@ -10,8 +10,11 @@ namespace eu.bayly.EADBasicNet.AWC {
   /// </summary>
   [XmlRoot("METAR")]
   public class METAR {
+    #region Fields
     private string wx;
+    #endregion
 
+    #region Properties
     /// <summary>
     /// Gets or sets the RAW METAR text.
     /// </summary>
@@ -206,12 +209,15 @@ namespace eu.bayly.EADBasicNet.AWC {
     /// </summary>
     [XmlElement("elevation_m")]
     public float? Elevation { get; set; }
+    #endregion
 
+    #region Methods
     /// <summary>
     /// Raised when the WX property is changed.
     /// </summary>
     protected void OnWXChanged() {
       // TODO: Implement this.
     }
- }
+    #endregion
+  }
 }

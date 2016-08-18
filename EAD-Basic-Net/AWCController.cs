@@ -24,6 +24,18 @@ namespace eu.bayly.EADBasicNet {
 
     #region Web methods
     /// <summary>
+    /// Gets the METAR observations for the specified location(s).
+    /// </summary>
+    public IHttpActionResult GetMETAR(string icao) {
+      try {
+        return Ok(METARResponse.FromAWS(icao).Data);
+
+      } catch (Exception ex) {
+        return InternalServerError(ex);
+      }
+    }
+
+    /// <summary>
     /// Gets the list of station codes.
     /// </summary>
     /// <param name="country"></param>
