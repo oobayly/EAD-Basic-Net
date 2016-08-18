@@ -91,6 +91,19 @@ namespace eu.bayly.EADBasicNet.EAD {
 
     #region Methods
     /// <summary>
+    /// Computes the MD5 hash of the object.
+    /// </summary>
+    public string MD5Sum() {
+      var bytes = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(this));
+      var hash = System.Security.Cryptography.MD5.Create().ComputeHash(bytes);
+      var sb = new System.Text.StringBuilder();
+      foreach (var b in hash) {
+        sb.Append(b.ToString("x2"));
+      }
+      return sb.ToString();
+    }
+
+    /// <summary>
     /// Creates the HttpWebRequest for the specified Uri.
     /// </summary>
     protected override HttpWebRequest CreateRequest(string uri, object args) {
