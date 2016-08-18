@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Net;
+using System.Web;
 using System.Web.Http;
 
 namespace eu.bayly.EADBasicNet {
@@ -29,6 +31,9 @@ namespace eu.bayly.EADBasicNet {
 
       if (exception is EAD.EADException) {
         message = string.Format("The EAD website returned the following error: {0}", exception.Message);
+
+      } else if (exception is IOException) {
+        message = string.Format("An error occurred accessing the local file system: {0}", exception.Message);
 
       } else if (exception is WebException) {
         var resp = ((WebException)exception).Response as HttpWebResponse;
