@@ -28,6 +28,11 @@ namespace eu.bayly.EADBasicNet.EAD {
     public DateTime? Effective { get; set; }
 
     /// <summary>
+    /// Gets or sets the ICAO code of the document's airport (if applicable).
+    /// </summary>
+    public string ICAO { get; set; }
+
+    /// <summary>
     /// Gets whether the document contains any data.
     /// </summary>
     public bool IsEmpty {
@@ -112,6 +117,8 @@ namespace eu.bayly.EADBasicNet.EAD {
       // Extract the base url
       var uriMatch = Regex.Match(html, "url.*?=.*?(?<uri>http[^\"]+)");
 
+      var icao = new Regex(@"^[A-Z]{2}_[^_]+_[0-9]+_(?<ICAO>[A-Z]{4})", RegexOptions.Compiled);
+
       var whitespace = new Regex(@"\s\s+", RegexOptions.Compiled);
 
       var list = new List<Document>();
@@ -139,13 +146,18 @@ namespace eu.bayly.EADBasicNet.EAD {
               "yyyy-MM-dd", null
               );
             item.Effective = DateTime.SpecifyKind(effective, DateTimeKind.Utc);
-
           }
 
           // PDF Name & URI cell
           node = row.SelectSingleNode("td[contains(@title, 'Open PDF Document')]");
           if (node != null) {
             item.Name = node.InnerText.Trim().Replace(".pdf", "");
+
+            // Extract the ICAO code (if available)
+            var icaoMatch = icao.Match(item.Name);
+            if (icaoMatch.Success)
+              item.ICAO = icaoMatch.Groups["ICAO"].Value;
+
 
             // URI is in a javascript href of the 4th node, wrapped
             // in html quotes
