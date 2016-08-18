@@ -4,12 +4,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace eu.bayly.EADBasicNet.EAD {
   /// <summary>
   /// Represents EAD search arguments.
   /// </summary>
   public class SearchArgs : EADBase {
+    #region Constants
+    /// <summary>
+    /// The number of parallel requests that can be made.
+    /// </summary>
+    private const int ParallelCount = 3;
+    #endregion
+
     #region Properties
     /// <summary>
     /// Gets or sets which AIRAC information to search for.
@@ -131,20 +140,37 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// <exception cref="EADException">The EAD website returned an error.</exception>
     public Document[] Search() {
       var list = new List<Document>();
-      int page = 0;
       int pageCount;
-      string html;
-      while (true) {
-        html = MakeRequest(SearchUri, page);
-        list.AddRange(Document.FromHtml(html, out pageCount));
-        if (page < (pageCount - 1)) {
-          page++;
-        } else {
-          break;
+
+      // First retrieve the first page to get the page count.
+      list.AddRange(Document.FromHtml(MakeRequest(SearchUri, 0), out pageCount));
+
+      if (pageCount != 1) {
+        // Execute the rest of the requests in parallel, using a semphore to limit the number of concurrent requests.
+        var semaphore = new SemaphoreSlim(0, ParallelCount);
+
+        var tasks = new Task[pageCount - 1];
+        for (int i = 1; i < pageCount; i++) {
+          // Cache the page number
+          int page = i;
+
+          tasks[i - 1] = Task.Run(() => {
+            // Block until the sempahore allows this thread to execute.
+            semaphore.Wait();
+
+            var docs = Document.FromHtml(MakeRequest(SearchUri, page));
+            lock (list) {
+              list.AddRange(docs);
+            }
+
+            semaphore.Release();
+          });
         }
+
+        semaphore.Release(ParallelCount);
+        Task.WaitAll(tasks);
       }
 
-      // return list.OrderBy(a => a.Name).ToArray();
       list.Sort();
       return list.ToArray();
     }
