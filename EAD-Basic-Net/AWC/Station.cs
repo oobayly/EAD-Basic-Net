@@ -205,13 +205,48 @@ namespace eu.bayly.EADBasicNet.AWC {
     /// <summary>
     /// Creates a list of NOAA weather stations NOAA's AWS website.
     /// </summary>
-    public static Station[] FromAWS() {
+    public static Station[] FromAWS(FileInfo localFile = null) {
       var req = (HttpWebRequest)HttpWebRequest.Create(StationUri);
+      if ((localFile != null) & localFile.Exists)
+        req.IfModifiedSince = localFile.LastWriteTime;
 
-      using (var resp = (HttpWebResponse)req.GetResponse()) {
-        using (var stream = resp.GetResponseStream()) {
-          return FromStream(stream);
+      try {
+        using (var resp = (HttpWebResponse)req.GetResponse()) {
+          using (var stream = resp.GetResponseStream()) {
+            if (localFile == null) {
+              return FromStream(stream);
+
+            } else {
+              // Copy the stream into the local file & parse
+              Station[] list;
+              using (var fs = localFile.Open(FileMode.Create, FileAccess.ReadWrite)) {
+                stream.CopyTo(fs);
+                fs.Flush();
+                fs.Position = 0;
+                list = FromStream(fs);
+              }
+
+              // Use the last modified date.
+              localFile.Refresh();
+              if (resp.LastModified != DateTime.MinValue)
+                localFile.LastWriteTime = resp.LastModified;
+
+              return list;
+
+            }
+          }
         }
+
+      } catch (WebException ex) {
+        // NotModified is now a valid response.
+        var resp = ex.Response as HttpWebResponse;
+        if (resp.StatusCode == HttpStatusCode.NotModified) {
+         return FromFile(localFile);
+
+        } else {
+          throw;
+        }
+
       }
     }
     #endregion

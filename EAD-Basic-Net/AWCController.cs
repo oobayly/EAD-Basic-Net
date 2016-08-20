@@ -38,15 +38,13 @@ namespace eu.bayly.EADBasicNet {
     /// <summary>
     /// Gets the list of station codes.
     /// </summary>
-    /// <param name="country"></param>
-    /// <returns></returns>
     [HttpGet]
     [ResponseType(typeof(Station[]))]
     public IHttpActionResult GetStations(string country = null, string icao = null) {
-      var path = new DirectoryInfo(System.Web.HttpContext.Current.Server.MapPath("~/App_Data"));
-      var file = new FileInfo(Path.Combine(path.FullName, "stations.txt"));
+      var appData = GetAppData();
+      var file = new FileInfo(Path.Combine(appData.FullName, "stations.txt"));
 
-      IEnumerable<Station> list = Station.FromFile(file);
+      IEnumerable<Station> list = Station.FromAWS(file);
       if (!string.IsNullOrEmpty(country)) {
         country = country.ToUpper();
         list = (from s in list where s.Country == country select s);
