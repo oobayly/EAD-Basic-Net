@@ -7,7 +7,7 @@ namespace eu.bayly.EADBasicNet.EAD {
   /// </summary>
   public class EADException : Exception {
     /// <summary>The System.Runtime.Serialization.StreamingContext that contains contextual
-    //     information about the source or destination.
+    /// information about the source or destination.
     /// Initializes a new instance of the System.Exception class.
     /// </summary>
     public EADException() : base() { }

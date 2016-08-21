@@ -18,7 +18,43 @@ namespace eu.bayly.EADBasicNet.AWC {
 
     #region Properties
     /// <summary>
-    /// Gets or sets the list of observation.
+    /// Gets or sets the index (ID) of the request.
+    /// </summary>
+    [XmlElement("request_index")]
+    public int Index { get; set; }
+
+    /// <summary>
+    /// Gets or sets the datasource of the response.
+    /// </summary>
+    [XmlElement("data_source")]
+    public DataSource DataSource { get; set; }
+
+    /// <summary>
+    /// Gets or sets the request type of the response.
+    /// </summary>
+    [XmlElement("request")]
+    public Request Request { get; set; }
+
+    /// <summary>
+    /// Gets or sets the errors returned.
+    /// </summary>
+    [XmlElement("errors", IsNullable = true)]
+    public Error[] Errors { get; set; }
+
+    /// <summary>
+    /// Gets or sets the warnings returned.
+    /// </summary>
+    [XmlElement("warnings", IsNullable = true)]
+    public Warning[] Warnings { get; set; }
+
+    /// <summary>
+    /// Gets or sets the time take to generate the AWC response (ms).
+    /// </summary>
+    [XmlElement("time_taken_ms")]
+    public int TimeTaken { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of observations/requests.
     /// </summary>
     [XmlArray("data")]
     public T[] Data { get; set; }
