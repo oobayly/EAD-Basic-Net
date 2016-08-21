@@ -48,11 +48,11 @@ namespace eu.bayly.EADBasicNet {
 
         var file = new FileInfo(Path.Combine(appData.FullName, hash + ".json"));
         if (file.Exists) {
-          var found = CachedSearch.FromFile(file);
+          var found = CachedSearch<Document[]>.FromFile(file);
           if (found.IsValid) {
             // Mark the respnse as cached and return those documents.
             HttpContext.Current.Response.AddHeader("X-Cached", true.ToString());
-            list = found.Documents;
+            list = found.Value;
 
           } else {
             // Remove the results if no longer valid.
@@ -65,8 +65,8 @@ namespace eu.bayly.EADBasicNet {
           list = args.Search();
 
           if (list.Length != 0) {
-            var cached = new CachedSearch() {
-              Documents = list,
+            var cached = new CachedSearch<Document[]>() {
+              Value = list,
               MD5Sum = args.MD5Sum(),
               Timestamp = list.First().Timestamp
             };

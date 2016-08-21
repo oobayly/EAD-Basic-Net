@@ -7,12 +7,7 @@ namespace eu.bayly.EADBasicNet {
   /// <summary>
   /// Represents an object used for storing cached search results.
   /// </summary>
-  public class CachedSearch {
-    /// <summary>
-    /// Gets or sets the documents returned by the search.
-    /// </summary>
-    public Document[] Documents { get; set; }
-
+  public class CachedSearch<T> {
     /// <summary>
     /// Gets whether the cached search results are valid.
     /// </summary>
@@ -33,12 +28,17 @@ namespace eu.bayly.EADBasicNet {
     public DateTime Timestamp { get; set; }
 
     /// <summary>
+    /// Gets or sets the value.
+    /// </summary>
+    public T Value { get; set; }
+
+    /// <summary>
     /// Reads the CachedSearch from the specified file.
     /// </summary>
-    public static CachedSearch FromFile(FileInfo file) {
+    public static CachedSearch<T> FromFile(FileInfo file) {
       using (var stream = file.OpenRead()) {
         using (var reader = new StreamReader(stream)) {
-          return JsonConvert.DeserializeObject<CachedSearch>(reader.ReadToEnd());
+          return JsonConvert.DeserializeObject<CachedSearch<T>>(reader.ReadToEnd());
         }
       }
     }
