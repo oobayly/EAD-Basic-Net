@@ -239,6 +239,7 @@
     <Compile Include="AWC\Enumerations.cs" />
     <Compile Include="AWC\Error.cs" />
     <Compile Include="AWC\Forecast.cs" />
+    <Compile Include="AWC\SearchArgs.cs" />
     <Compile Include="AWC\Request.cs" />
     <Compile Include="AWC\Temperature.cs" />
     <Compile Include="AWC\METAR.cs" />
@@ -250,7 +251,7 @@
     <Compile Include="AWC\Station.cs" />
     <Compile Include="AWCController.cs" />
     <Compile Include="AWC\TAF.cs" />
-    <Compile Include="AWC\Warnings.cs" />
+    <Compile Include="AWC\Warning.cs" />
     <Compile Include="CachedSearch.cs" />
     <Compile Include="EAD\Document.cs" />
     <Compile Include="EAD\EADBase.cs" />

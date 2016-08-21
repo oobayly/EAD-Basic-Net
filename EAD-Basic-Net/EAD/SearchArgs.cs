@@ -11,6 +11,7 @@ namespace eu.bayly.EADBasicNet.EAD {
   /// <summary>
   /// Represents EAD search arguments.
   /// </summary>
+  [Areas.HelpPage.ModelDescriptions.ModelName("EAD.SearchArgs")]
   public class SearchArgs : EADBase {
     #region Constants
     /// <summary>

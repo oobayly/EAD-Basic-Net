@@ -71,6 +71,20 @@ namespace eu.bayly.EADBasicNet.AWC {
   }
 
   /// <summary>
+  /// The type of most recent response data to filter by.
+  /// </summary>
+  public enum MostRecentType {
+    /// <summary>Don't apply filtering.</summary>
+    Off,
+    /// <summary>Show the most recent observation or report of any station.</summary>
+    [Description("Any station")]
+    Any,
+    /// <summary>Show the most recent observation or report for each station.</summary>
+    [Description("Each station")]
+    Each
+  }
+
+  /// <summary>
   /// Attributes that a weather station may have.
   /// </summary>
   [Flags]

@@ -26,10 +26,11 @@ namespace eu.bayly.EADBasicNet {
     /// <summary>
     /// Gets the METAR observations for the specified location(s).
     /// </summary>
+    [HttpPost]
     [ResponseType(typeof(METARResponse))]
-    public IHttpActionResult GetMETAR(string icao) {
+    public IHttpActionResult GetMETAR([FromBody]SearchArgs args) {
       try {
-        return Ok(METARResponse.FromAWS(icao));
+        return Ok(args.Search<METAR>());
 
       } catch (Exception ex) {
         return InternalServerError(ex);
@@ -61,10 +62,11 @@ namespace eu.bayly.EADBasicNet {
     /// <summary>
     /// Gets the TAF observations for the specified location(s).
     /// </summary>
+    [HttpPost]
     [ResponseType(typeof(TAFResponse))]
-    public IHttpActionResult GetTAF(string icao) {
+    public IHttpActionResult GetTAF([FromBody]SearchArgs args) {
       try {
-        return Ok(TAFResponse.FromAWS(icao));
+        return Ok(args.Search<TAF>());
 
       } catch (Exception ex) {
         return InternalServerError(ex);

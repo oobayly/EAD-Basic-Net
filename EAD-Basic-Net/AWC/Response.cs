@@ -9,13 +9,6 @@ namespace eu.bayly.EADBasicNet.AWC {
   /// </summary>
   [XmlRoot("response")]
   public abstract class Response<T> {
-    #region Constants
-    /// <summary>
-    /// The Uri which contains the observation data.
-    /// </summary>
-    public const string ReportUri = "https://aviationweather.gov/adds/dataserver_current/httpparam?";
-    #endregion
-
     #region Properties
     /// <summary>
     /// Gets or sets the index (ID) of the request.
@@ -79,32 +72,19 @@ namespace eu.bayly.EADBasicNet.AWC {
     }
 
     /// <summary>
-    /// Fetches a report from the NOAA's AWS website.
+    /// Fetches the most recent report from the NOAA AWC website.
     /// </summary>
-    public static Response<T> FromAWS(string icao) {
-      string reportType;
-      if (typeof(T) == typeof(METAR)) {
-        reportType = "metars";
-      } else if (typeof(T) == typeof(TAF)) {
-        reportType = "tafs";
-      } else {
-        throw new Exception("Invalid generic type.");
-      }
+    public static Response<T> FromAWS(string icao, int hourseBeforeNow = 3) {
+      if (!System.Text.RegularExpressions.Regex.IsMatch(icao, "^[A-Za-z]{4}$"))
+        throw new ArgumentException("Value is not a valid ICAO code.", "icao");
 
-      var uri = ReportUri +
-        "dataSource=" + reportType +
-        "&requestType=retrieve&format=xml" +
-        string.Format("&hoursBeforeNow={0}", 1) +
-        string.Format("&mostRecent={0}", false) +
-        "&stationString=" + icao;
+      var args = new SearchArgs() {
+        MostRecent = MostRecentType.Any,
+        HoursBeforeNow = hourseBeforeNow,
+        Stations = new string[] { icao }
+      };
 
-      var req = (HttpWebRequest)HttpWebRequest.Create(uri);
-
-      using (var resp = (HttpWebResponse)req.GetResponse()) {
-        using (var stream = resp.GetResponseStream()) {
-          return FromStream(stream);
-        }
-      }
+      return args.Search<T>();
     }
     #endregion
   }
