@@ -3,7 +3,7 @@ using System.Xml.Serialization;
 
 namespace eu.bayly.EADBasicNet.AWC {
   /// <summary>
-  /// Represents the qyality control flags value for a METAR report.
+  /// Represents the quality control flags value for a METAR observation.
   /// </summary>
   [XmlRoot("quality_control_flags")]
   public class QualityControlFlags {

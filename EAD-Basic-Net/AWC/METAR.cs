@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 
 namespace eu.bayly.EADBasicNet.AWC {
   /// <summary>
-  /// Represents an AWC METAR report.
+  /// Represents an AWC METAR observation.
   /// </summary>
   [XmlRoot("METAR")]
   public class METAR {
