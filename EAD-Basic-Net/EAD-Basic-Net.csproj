@@ -41,6 +41,10 @@
     <DocumentationFile>bin\EAD-Basic-Net.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Csv, Version=1.0.11.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Csv.1.0.11\lib\dotnet\Csv.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="HtmlAgilityPack, Version=1.4.9.5, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <HintPath>packages\HtmlAgilityPack.1.4.9.5\lib\Net45\HtmlAgilityPack.dll</HintPath>
       <Private>True</Private>
@@ -262,6 +266,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="OpenFlights\Airport.cs" />
+    <Compile Include="OpenFlights\Enumerations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EADController.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -275,6 +281,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Request.cs" />
+    <Compile Include="OpenFlightsController.cs" />
     <Compile Include="WebApiConfig.cs" />
   </ItemGroup>
   <ItemGroup>
