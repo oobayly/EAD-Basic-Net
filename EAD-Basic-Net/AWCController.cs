@@ -56,6 +56,18 @@ namespace eu.bayly.EADBasicNet {
 
       return Ok(list.ToArray());
     }
+
+    /// <summary>
+    /// Gets the TAF observations for the specified location(s).
+    /// </summary>
+    public IHttpActionResult GetTAF(string icao) {
+      try {
+        return Ok(TAFResponse.FromAWS(icao).Data);
+
+      } catch (Exception ex) {
+        return InternalServerError(ex);
+      }
+    }
     #endregion
   }
 }

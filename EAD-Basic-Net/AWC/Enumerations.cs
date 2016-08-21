@@ -3,10 +3,31 @@ using System.ComponentModel;
 
 namespace eu.bayly.EADBasicNet.AWC {
   /// <summary>
+  /// The change indicator for a TAF bulletin forecast.
+  /// </summary>
+  public enum ChangeIndicator {
+    /// <summary>Invalid value.</summary>
+    Invalid,
+
+    /// <summary>emporary fluctuation in some of the elements lasting for periods of 30 minutes or more but not longer than one hour</summary>
+    [Description("Temporary")]
+    TEMPO,
+    /// <summary>Used to indicate a gradual change in some of the forecast elements.</summary>
+    [Description("Becoming")]
+    BECMG,
+    /// <summary>Used when a significant change in all elements is expected at a specific time.</summary>
+    [Description("From")]
+    FM,
+    /// <summary>The probability or chance of thunderstorms or other precipitation events occuring.</summary>
+    [Description("Probability")]
+    PROB
+  }
+
+  /// <summary>
   /// The type of cloud covers used in METAR/TAF observations.
   /// </summary>
   public enum CloudCover {
-    /// <summary>Invlid value.</summary>
+    /// <summary>Invalid value.</summary>
     Invalid,
 
     /// <summary>Ceiling and visibility okay.</summary>

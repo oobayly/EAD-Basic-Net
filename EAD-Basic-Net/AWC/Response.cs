@@ -32,6 +32,8 @@ namespace eu.bayly.EADBasicNet.AWC {
       Type t;
       if (typeof(T) == typeof(METAR)) {
         t = typeof(METARResponse);
+      } else if (typeof(T) == typeof(TAF)) {
+        t = typeof(TAFResponse);
       } else {
         throw new Exception("Invalid generic type.");
       }
@@ -47,6 +49,8 @@ namespace eu.bayly.EADBasicNet.AWC {
       string reportType;
       if (typeof(T) == typeof(METAR)) {
         reportType = "metars";
+      } else if (typeof(T) == typeof(TAF)) {
+        reportType = "tafs";
       } else {
         throw new Exception("Invalid generic type.");
       }
@@ -74,5 +78,12 @@ namespace eu.bayly.EADBasicNet.AWC {
   /// </summary>
   [XmlRoot("response")]
   public class METARResponse : Response<METAR> {
+  }
+
+  /// <summary>
+  /// Represents a AWC TAF report response.
+  /// </summary>
+  [XmlRoot("response")]
+  public class TAFResponse : Response<TAF> {
   }
 }

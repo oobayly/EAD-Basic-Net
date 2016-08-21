@@ -19,6 +19,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -229,12 +230,17 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="ApiControllerBase.cs" />
     <Compile Include="AWC\Enumerations.cs" />
+    <Compile Include="AWC\Forecast.cs" />
+    <Compile Include="AWC\Temperature.cs" />
     <Compile Include="AWC\METAR.cs" />
     <Compile Include="AWC\QualityControlFlags.cs" />
     <Compile Include="AWC\Response.cs" />
+    <Compile Include="AWC\IcingCondition.cs" />
+    <Compile Include="AWC\TurbulenceCondition.cs" />
     <Compile Include="AWC\SkyCondition.cs" />
     <Compile Include="AWC\Station.cs" />
     <Compile Include="AWCController.cs" />
+    <Compile Include="AWC\TAF.cs" />
     <Compile Include="CachedSearch.cs" />
     <Compile Include="EAD\Document.cs" />
     <Compile Include="EAD\EADBase.cs" />
