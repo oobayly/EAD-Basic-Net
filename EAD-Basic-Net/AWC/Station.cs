@@ -80,18 +80,11 @@ namespace eu.bayly.EADBasicNet.AWC {
 
     #region Methods
     /// <summary>
-    /// Creates a list of NOAA weather stations from the specified file.
-    /// </summary>
-    public static Station[] FromFile(FileInfo file) {
-      using (var fs = file.OpenRead()) {
-        return FromStream(fs);
-      }
-    }
-
-    /// <summary>
     /// Creates a list of NOAA weather stations from the specified stream.
     /// </summary>
-    public static Station[] FromStream(Stream stream) {
+    /// <param name="stream">The stream from which the stations are read.</param>
+    /// <param name="match">An optional set of criteria that the airports should match</param>
+    public static Station[] FromStream(Stream stream, Predicate<Station> match = null) {
       var list = new List<Station>();
 
       using (var reader = new StreamReader(stream)) {
@@ -195,7 +188,8 @@ namespace eu.bayly.EADBasicNet.AWC {
           }
           item.Attributes = attr;
 
-          list.Add(item);
+          if ((match == null) || match.Invoke(item))
+            list.Add(item);
         }
       }
 
@@ -205,7 +199,9 @@ namespace eu.bayly.EADBasicNet.AWC {
     /// <summary>
     /// Creates a list of NOAA weather stations NOAA's AWS website.
     /// </summary>
-    public static Station[] FromAWS(FileInfo localFile = null) {
+    /// <param name="localFile">An optional file used for caching.</param>
+    /// <param name="match">An optional set of criteria that the airports should match</param>
+    public static Station[] FromAWS(FileInfo localFile = null, Predicate<Station> match = null) {
       var req = (HttpWebRequest)HttpWebRequest.Create(StationUri);
       if ((localFile != null) & localFile.Exists)
         req.IfModifiedSince = localFile.LastWriteTime;
@@ -214,7 +210,7 @@ namespace eu.bayly.EADBasicNet.AWC {
         using (var resp = (HttpWebResponse)req.GetResponse()) {
           using (var stream = resp.GetResponseStream()) {
             if (localFile == null) {
-              return FromStream(stream);
+              return FromStream(stream, match);
 
             } else {
               // Copy the stream into the local file & parse
@@ -223,7 +219,7 @@ namespace eu.bayly.EADBasicNet.AWC {
                 stream.CopyTo(fs);
                 fs.Flush();
                 fs.Position = 0;
-                list = FromStream(fs);
+                list = FromStream(fs, match);
               }
 
               // Use the last modified date.
@@ -241,7 +237,9 @@ namespace eu.bayly.EADBasicNet.AWC {
         // NotModified is now a valid response.
         var resp = ex.Response as HttpWebResponse;
         if (resp.StatusCode == HttpStatusCode.NotModified) {
-         return FromFile(localFile);
+          using (var fs = localFile.OpenRead()) {
+            return FromStream(fs, match);
+          }
 
         } else {
           throw;

@@ -15,7 +15,7 @@ namespace eu.bayly.EADBasicNet {
   public class AWCController : ApiControllerBase {
     #region Properties
     /// <summary>
-    /// Gets the Enumeration namespace.
+    /// Gets the namespace.
     /// </summary>
     protected override string Namespace {
       get { return "eu.bayly.EADBasicNet.AWC"; }
@@ -46,15 +46,14 @@ namespace eu.bayly.EADBasicNet {
       var appData = GetAppData();
       var file = new FileInfo(Path.Combine(appData.FullName, "stations.txt"));
 
-      IEnumerable<Station> list = Station.FromAWS(file);
-      if (!string.IsNullOrEmpty(country)) {
+      if (!string.IsNullOrEmpty(country))
         country = country.ToUpper();
-        list = (from s in list where s.Country == country select s);
-      }
-      if (!string.IsNullOrEmpty(icao)) {
+      if (!string.IsNullOrEmpty(icao))
         icao = icao.ToUpper();
-        list = (from s in list where s.ICAO == icao select s);
-      }
+
+      IEnumerable<Station> list = Station.FromAWS(file,
+        s => ((country == null) || (s.Country == country)) && ((icao == null) || (s.ICAO == icao))
+        );
 
       return Ok(list.ToArray());
     }
