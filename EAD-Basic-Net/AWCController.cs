@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
+using WebApi.OutputCache.V2;
 
 namespace eu.bayly.EADBasicNet {
   /// <summary>
@@ -41,6 +42,7 @@ namespace eu.bayly.EADBasicNet {
     /// Gets the list of station codes.
     /// </summary>
     [HttpGet]
+    [CacheOutput(ClientTimeSpan = 86400)]
     [ResponseType(typeof(Station[]))]
     public IHttpActionResult GetStations(string country = null, string icao = null) {
       var appData = GetAppData();

@@ -8,8 +8,6 @@
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/0.9.80/jsrender.min.js"></script>
   <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key="></script>
 
-  <script type="text/javascript" src="https://npmcdn.com/csvtojson@1.0.0/dist/csvtojson.min.js"></script>
-  <script type="text/javascript" src="https://npmcdn.com/xml2json-light@1.0.4/xml2json.min.js"></script>
   <script type="text/javascript" src="https://npmcdn.com/geodesy@1.1.0/dms.js"></script>
 
   <style type="text/css">
@@ -70,7 +68,6 @@
     }
 
     .info .documents a {
-      white-space: nowrap;
     }
 
     .info .documents .effective {
@@ -157,20 +154,12 @@ $(document).ready(function () {
   };
 
   var getAirports = function (remote) {
-    var url = remote ? "https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat" : "./airports.dat";
-
     var q = $.Deferred();
 
-    $.get(url)
+    $.get("../api/OpenFlights/GetAirports")
     .done(function (response) {
-      var converter = new csvtojson.Converter({
-        noheader: true,
-        headers: ["Index", "Name", "City", "Country", "IATA", "ICAO", "Lat", "Lon", "Alt", "TZ", "DST", "TZName"]
-      });
-      converter.fromString(response, function (err, result) {
-        airports = result;
-        q.resolve();
-      });
+      airports = response;
+      q.resolve();
     });
 
     return q.promise();
@@ -218,7 +207,7 @@ $(document).ready(function () {
     var list;
     if (country.length == 2) {
       var list = $.grep(airports, function (item) {
-        return (item.ICAO.indexOf(country) === 0) && item.ICAO.match(/^[A-Z]{4}$/);
+        return item.ICAO && (item.ICAO.indexOf(country) === 0) && item.ICAO.match(/^[A-Z]{4}$/);
       });
     } else {
       var list = $.grep(airports, function (item) {
