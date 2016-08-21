@@ -19,7 +19,7 @@ namespace eu.bayly.EADBasicNet {
 
     #region Properties
     /// <summary>
-    /// Gets the Enumeration namespace.
+    /// Gets the namespace.
     /// </summary>
     protected override string Namespace {
       get { return "eu.bayly.EADBasicNet.EAD"; }
