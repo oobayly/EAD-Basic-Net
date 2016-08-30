@@ -25,6 +25,9 @@ namespace eu.bayly.EADBasicNet {
     }
     #endregion
 
+    #region Methods
+    #endregion
+
     #region Web methods
     /// <summary>
     /// Gets the list of airports.
@@ -33,19 +36,50 @@ namespace eu.bayly.EADBasicNet {
     [CacheOutput(ClientTimeSpan = 86400)]
     [ResponseType(typeof(Airport[]))]
     public IHttpActionResult GetAirports(string country = null, string icao = null) {
-      var appData = GetAppData();
-      var file = new FileInfo(Path.Combine(appData.FullName, "airports.txt"));
-
       if (!string.IsNullOrEmpty(country))
         country = country.ToUpper();
       if (!string.IsNullOrEmpty(icao))
         icao = icao.ToUpper();
 
-      IEnumerable<Airport> list = Airport.FromOpenFlights(file,
-        s => ((country == null) || (s.Country == country)) && ((icao == null) || (s.ICAO == icao))
-        );
+      try {
+        var appData = GetAppData();
+        var file = new FileInfo(Path.Combine(appData.FullName, "airports.txt"));
 
-      return Ok(list.ToArray());
+        IEnumerable<Airport> list = Airport.FromOpenFlights(file,
+          s => ((country == null) || (s.Country == country)) && ((icao == null) || (s.ICAO == icao))
+          );
+
+        return Ok(list.ToArray());
+
+      } catch (Exception ex) {
+        return InternalServerError(ex);
+
+      }
+    }
+
+    /// <summary>
+    /// Gets the list of countries.
+    /// </summary>
+    [HttpGet]
+    [CacheOutput(ClientTimeSpan = 86400)]
+    [ResponseType(typeof(string[]))]
+    public IHttpActionResult GetCountries() {
+      try {
+        var appData = GetAppData();
+        var file = new FileInfo(Path.Combine(appData.FullName, "airports.txt"));
+
+        var list = (
+        from a in Airport.FromOpenFlights(file)
+        orderby a.Country
+        select a.Country
+        ).Distinct();
+
+        return Ok(list);
+
+      } catch (Exception ex) {
+        return InternalServerError(ex);
+
+      }
     }
     #endregion
   }
