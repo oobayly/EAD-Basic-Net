@@ -6,7 +6,7 @@
 
   <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/0.9.80/jsrender.min.js"></script>
-  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key="></script>
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=geometry&v=3&key="></script>
 
   <script type="text/javascript" src="https://npmcdn.com/geodesy@1.1.0/dms.js"></script>
 
@@ -220,6 +220,36 @@ $(document).ready(function () {
       item.setMap(null);
     });
 
+    // Calculate the center (average)
+    var center = { lat: 0, lng: 0 };
+    $.each(list, function (index, item) {
+      item.Position = new google.maps.LatLng(item.Lat, item.Lon);
+      center.lat += item.Lat;
+      center.lng += item.Lon;
+    });
+    if (list.length !== 0) {
+      center = new google.maps.LatLng(center.lat / list.length, center.lng / list.length);
+
+      // Now calculate the average distance
+      var avDistance = 0;
+      $.each(list, function (index, item) {
+        item.DistanceFromCentre = google.maps.geometry.spherical.computeDistanceBetween(center, item.Position);
+        avDistance += item.DistanceFromCentre;
+      });
+      avDistance /= list.length;
+
+      // Sort in ascending order - by distance from center to find IQR
+      list.sort(function (a, b) {
+        return a.DistanceFromCentre - b.DistanceFromCentre;
+      });
+      var iqr = list[Math.floor(list.length / 4)].DistanceFromCentre;
+
+      // Finally flag each item whether it's to be included in the default map using 10 * IQR as the cut-off
+      $.each(list, function (index, item) {
+        item.Display = item.DistanceFromCentre <= (10 * iqr);
+      });
+    }
+    
     markers = [];
     var bounds = new google.maps.LatLngBounds();
     $.each(list, function (index, item) {
@@ -232,7 +262,9 @@ $(document).ready(function () {
       });
       marker.addListener("click", onMarkerClick);
       markers.push(marker);
-      bounds.extend(marker.getPosition());
+
+      if (item.Display)
+        bounds.extend(marker.getPosition());
     });
 
     if (list.length == 1) {
