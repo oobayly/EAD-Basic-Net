@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,7 @@ namespace eu.bayly.EADBasicNet {
         );
 
       config.Formatters.JsonFormatter.SerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
+      config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new StringEnumConverter());
     }
   }
 }

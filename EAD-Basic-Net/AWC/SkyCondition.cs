@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
+﻿using System;
 using System.Xml.Serialization;
 
 namespace eu.bayly.EADBasicNet.AWC {
@@ -12,7 +10,6 @@ namespace eu.bayly.EADBasicNet.AWC {
     /// <summary>
     /// Gets or sets the type of Cover.
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
     [XmlAttribute("sky_cover")]
     public CloudCover Cover { get; set; }
 

@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 
@@ -200,7 +198,6 @@ namespace eu.bayly.EADBasicNet.AWC {
     /// <summary>
     /// Gets or sets the METAR type.
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
     [XmlElement("metar_type")]
     public METARType METARType { get; set; }
 

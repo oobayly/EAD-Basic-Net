@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -26,7 +24,6 @@ namespace eu.bayly.EADBasicNet.AWC {
     /// <summary>
     /// Gets or sets the station's attributes.
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
     public StationAttributes Attributes { get; set; }
 
     /// <summary>

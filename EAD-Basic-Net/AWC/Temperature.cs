@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
+﻿using System;
 using System.Xml.Serialization;
 
 namespace eu.bayly.EADBasicNet.AWC {

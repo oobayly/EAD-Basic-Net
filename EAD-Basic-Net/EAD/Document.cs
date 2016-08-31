@@ -1,6 +1,4 @@
 ﻿using HtmlAgilityPack;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -24,7 +22,6 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// <summary>
     /// Gets or sets the Aeronautical Information Regulation And Control (AIRAC) information for the document.
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
     public AIRAC? AIRAC { get; set; }
 
     /// <summary>
@@ -49,7 +46,6 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// <summary>
     /// Gets or sets the document's language.
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
     public Language? Language { get; set; }
 
     /// <summary>
@@ -68,7 +64,6 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// <summary>
     /// Gets or sets the part-AIRAC type of the document.
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
     public PartAIRAC? PartAIRAC { get; set; }
 
     /// <summary>
@@ -89,7 +84,6 @@ namespace eu.bayly.EADBasicNet.EAD {
     /// <summary>
     /// Gets or sets what type the document is.
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
     public DocumentType? Type { get; set; }
 
     /// <summary>

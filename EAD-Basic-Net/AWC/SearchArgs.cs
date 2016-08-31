@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
+﻿using System;
 using System.Net;
 
 namespace eu.bayly.EADBasicNet.AWC {
@@ -32,7 +30,6 @@ namespace eu.bayly.EADBasicNet.AWC {
     /// <summary>
     /// Gets or sets whether only the most recent result should be returned.
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
     public MostRecentType MostRecent { get; set; }
 
     /// <summary>

@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
+﻿using System;
 using System.Xml.Serialization;
 
 namespace eu.bayly.EADBasicNet.AWC {
@@ -29,7 +27,6 @@ namespace eu.bayly.EADBasicNet.AWC {
     /// <summary>
     /// Gets or sets the forecast change indicator.
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
     [XmlElement("change_indicator")]
     public ChangeIndicator? ChangeIndicator { get; set; }
 
