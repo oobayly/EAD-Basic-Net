@@ -5,10 +5,12 @@
   <meta name="viewport" content="width=device-width">
 
   <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+  <script type="text/javascript" src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/0.9.80/jsrender.min.js"></script>
   <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=geometry&v=3&key="></script>
-
   <script type="text/javascript" src="https://npmcdn.com/geodesy@1.1.0/dms.js"></script>
+
+  <link rel=" stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
 
   <style type="text/css">
     html, body {
@@ -89,6 +91,7 @@
 <div class="container">
 <div class="options">
   <select id="country"></select>
+  <input type="text" id="filter" placeholder="Name, ICAO" />
 </div>
 <div class="map"></div>
 </div>
@@ -103,24 +106,100 @@
     <span class="lon">{{lon:Lon}}</span>
     <span class="elevation">{{number:Alt}} ft</span>
   </h3>
-  <div class="documents">
-    {{for documents}}
-    <div>
-      <a href="{{attr:Uri}}" title="{{attr:Name}}" target="_blank">{{html:Title}}</a><br>
-      <span class="effective" title="Effective from">{{date:Effective}}</span>
+  <div class="tabs">
+    <ul>
+      <li><a href="#tabs-2">Aerodrome</a></li>
+      <li><a href="#tabs-6">SID</a></li>
+      <li><a href="#tabs-7">STAR</a></li>
+      <li><a href="#tabs-8">Approach</a></li>
+      <li><a href="#tabs-other">Other</a></li>
+    </ul>
+    <div id="tabs-2" class="documents">
+      {{for aerodrome}}
+      <div>
+        <a href="{{attr:Uri}}" title="{{attr:Name}}" target="_blank">{{html:Title}}</a><br>
+        <span class="effective" title="Effective from">{{date:Effective}}</span>
+      </div>
+      {{/for}}
     </div>
-    {{/for}}
+    <div id="tabs-6" class="documents">
+      {{for sid}}
+      <div>
+        <a href="{{attr:Uri}}" title="{{attr:Name}}" target="_blank">{{html:Title}}</a><br>
+        <span class="effective" title="Effective from">{{date:Effective}}</span>
+      </div>
+      {{/for}}
+    </div>
+    <div id="tabs-7" class="documents">
+      {{for star}}
+      <div>
+        <a href="{{attr:Uri}}" title="{{attr:Name}}" target="_blank">{{html:Title}}</a><br>
+        <span class="effective" title="Effective from">{{date:Effective}}</span>
+      </div>
+      {{/for}}
+    </div>
+    <div id="tabs-8" class="documents">
+      {{for approach}}
+      <div>
+        <a href="{{attr:Uri}}" title="{{attr:Name}}" target="_blank">{{html:Title}}</a><br>
+        <span class="effective" title="Effective from">{{date:Effective}}</span>
+      </div>
+      {{/for}}
+    </div>
+    <div id="tabs-other" class="documents">
+      {{for aerodrome}}
+      <div>
+        <a href="{{attr:Uri}}" title="{{attr:Name}}" target="_blank">{{html:Title}}</a><br>
+        <span class="effective" title="Effective from">{{date:Effective}}</span>
+      </div>
+      {{/for}}
+    </div>
   </div>
 </div>
 </script>
 
 <script type="text/javascript">
 $(document).ready(function () {
+  var Airport = function (args) {
+    var resp = {
+      get aerodrome() {
+        return $.grep(this.documents, function (item) {
+          return item.Title.match(/(Aerodrome|Parking|Docking)/i);
+        });
+      },
+
+      get approach() {
+        return $.grep(this.documents, function (item) {
+          return item.Title.match(/Approach/i);
+        });
+      },
+
+      get sid() {
+        return $.grep(this.documents, function (item) {
+          return item.Title.match(/SID/);
+        });
+      },
+
+      get star() {
+        return $.grep(this.documents, function (item) {
+          return item.Title.match(/STAR/);
+        });
+      },
+    };
+
+    $.extend(resp, args);
+    return resp;
+  };
+
   var airports = [];
   var countries = [];
   var map = null;
   var markers = [];
   var infoWindow = null;
+
+  var timeouts = {
+    filter: null,
+  };
 
   var initialize = function () {
     var config = JSON.parse(window.localStorage.getItem("mapConfig") || "{}");
@@ -150,6 +229,20 @@ $(document).ready(function () {
     getAirports(true)
     .then(function () {
       return getCountries(true);
+    }).then(function() {
+      $("#country").on("change", onCountryChanged);
+      onCountryChanged();
+    });
+
+    $("#filter").on("change keyup", function (e) {
+      if (timeouts.filter) {
+        window.clearTimeout(timeouts.filter);
+        timeouts.filter = null;
+      }
+      timeouts.filter = window.setTimeout(function () {
+        onFilterChanged(e);
+        timeouts.filter = null;
+      }, 500);
     });
   };
 
@@ -158,7 +251,10 @@ $(document).ready(function () {
 
     $.get("../api/OpenFlights/GetAirports")
     .done(function (response) {
-      airports = response;
+      airports = [];
+      $.each(response, function (index, item) {
+        airports.push(new Airport(item));
+      });
       q.resolve();
     });
 
@@ -187,8 +283,6 @@ $(document).ready(function () {
         })
 
         select.val(window.localStorage.getItem("country") || "EI");
-        select.on("change", onCountryChanged);
-        onCountryChanged();
 
         q.resolve();
       });
@@ -202,6 +296,11 @@ $(document).ready(function () {
   };
 
   var onCountryChanged = function (e) {
+    onFilterChanged();
+  };
+
+  var onFilterChanged = function (e) {
+    var filter = $("#filter").val() || "";
     var country = $("#country").val() || "";
 
     var list;
@@ -212,6 +311,13 @@ $(document).ready(function () {
     } else {
       var list = $.grep(airports, function (item) {
         return (item.Country == country) && item.ICAO.match(/^[A-Z]{4}$/);
+      });
+    }
+
+    if (filter) {
+      var re = new RegExp(filter, "i");
+      list = $.grep(list, function (item) {
+        return item.Name.match(re) || item.ICAO.match(re);
       });
     }
 
@@ -249,7 +355,7 @@ $(document).ready(function () {
         item.Display = item.DistanceFromCentre <= (10 * iqr);
       });
     }
-    
+
     markers = [];
     var bounds = new google.maps.LatLngBounds();
     $.each(list, function (index, item) {
@@ -283,13 +389,16 @@ $(document).ready(function () {
 
     if (!infoWindow) {
       infoWindow = new google.maps.InfoWindow({});
+      google.maps.event.addListener(infoWindow, "domready", function () {
+        $(".tabs").tabs();
+      });
     }
 
     if (!marker.airport.documents) {
       searchEAD({
         Authority: marker.airport.ICAO.substr(0, 2),
-        //PartAIRAC: "AD",
-        Name: "*" + marker.airport.ICAO + "*"
+        Name: "*" + marker.airport.ICAO + "*",
+        Type: "Charts",
       })
       .done(function (documents) {
         marker.airport.documents = documents;
@@ -375,6 +484,8 @@ $(document).ready(function () {
     if (infoWindow.airport !== marker.airport) {
       infoWindow.airport = marker.airport;
       infoWindow.setContent($("#infoWindow").render(marker.airport));
+
+      console.log(infoWindow.airport);
     }
 
     infoWindow.open(map, marker);
