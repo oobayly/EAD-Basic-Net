@@ -72,14 +72,12 @@
       text-align: center;
     }
 
-    .info .documents {
-      max-height: 200px;
-      overflow: auto;
-    }
-
-    .info .documents h3 {
+    .info h3 {
       margin: .5em 0;
       border-bottom: 1px solid #ddd;
+    }
+
+    .info .documents {
     }
 
     .info .documents div+div {
@@ -97,6 +95,25 @@
       font-size: smaller;
     }
 
+    .info dl {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .info dl > * {
+      margin: 0;
+      padding: .25em 0;
+    }
+
+    .info dl dt {
+      width: 33%;
+      max-width: 8em;
+    }
+
+    .info dl dd {
+      width: 67%;
+    }
+
     .info .metar {
     }
 
@@ -112,6 +129,8 @@
 
     .ui-tabs .ui-tabs-panel {
       padding: .5em;
+      max-height: 200px; /* Hack */
+      overflow: auto;
     }
 
     .debug {
@@ -173,6 +192,7 @@
         <li><a href="#tabs-wx">WX</a></li>
       </ul>
       <div id="tabs-airport" class="documents">
+        <h3>Charts</h3>
         {{for aerodrome tmpl="#document" /}}
       </div>
       <div id="tabs-sidstar" class="documents">
@@ -209,11 +229,84 @@
   </div>
 </script>
 
-<script type="text/x-jsrender" id="metar">
-  {{for Data}}
-    <pre>{{json:#data}}</pre>
+  <script type="text/x-jsrender" id="metar">
+    {{for Data}}
+    <h3>METAR report at {{:Time.toUTCString()}}</h3>
+    <div>
+      <dl>
+        {{if Temp}}
+          <dt>Temp</dt>
+          <dd>
+            {{:Temp}} &deg;C
+            {{if DewPoint}}
+              (Dew Point: {{:DewPoint}} &deg;C)
+              <!-- TODO: Implement humidity -->
+            {{/if}}
+            {{if MinTemp24hr && MaxTemp}}
+              <br />6 hr range: {{:MinTemp}} &deg;C to {{:MaxTemp}} &deg;C
+            {{/if}}
+            {{if MinTemp24hr && MaxTemp24hr}}
+             <br />24 hr range: {{:MinTemp24hr}} &deg;C to {{:MaxTemp24hr}} &deg;C
+            {{/if}}
+          </dd>
+        {{/if}}
+
+        <dt>Wind</dt>
+        <dd>
+          {{if WindSpeed}}
+            {{:WindDirection}} &deg; at {{:WindSpeed}} kts
+            {{if WindGust}}
+              gusting {{:WindGust}} kts
+            {{/if}}
+          {{else}}
+            Calm
+          {{/if}}
+        </dd>
+
+        <dt>Visibility</dt>
+        <dd>
+          {{:Visibility}} miles
+          {{if VerticalVisibility}}, {{number:VerticalVisibility}} ft vertically{{/if}}
+        </dd>
+
+        <dt>Altimeter</dt>
+        <dd>{{:Altimeter.toFixed(2)}} inHg, {{:(Altimeter * 0.0254 * 9.806 * 13593 / 100).toFixed()}} mb</dd>
+
+        {{if QualityControlFlags}}
+        <dt title="Quality Control flags">QC flags</dt>
+        <dd>
+          {{props QualityControlFlags}}
+          {{html:key}}<br />
+          {{/props}}
+        </dd>
+        {{/if}}
+
+        {{if WXText}}
+          <dt>Weather</dt>
+          <dd>{{html:WXText}}</dd>
+        {{/if}}
+
+        {{if SkyCondition.length}}
+        <dt>Clouds</dt>
+        <dd>
+          {{for SkyCondition}}
+          <div>
+            {{:CoverName}}
+            {{if Base}}at {{number:Base}} ft AGL{{/if}}
+            {{if Type}}({{html:Type}}){{/if}}
+          </div>
+          {{/for}}
+        </dd>
+        {{/if}}
+
+        {{if FlightCategory}}
+        <dt>Flight category</dt>
+        <dd>{{html:FlightCategory}}</dd>
+        {{/if}}
+      </dl>
+    </div>
   {{/for}}
-</script>
+  </script>
 
 <script type="text/javascript">
 $(document).ready(function () {
@@ -445,6 +538,10 @@ $(document).ready(function () {
       }
     )
     .done(function (response, status, request) {
+      $.each(response.Data, function (index, item) {
+        item.Time = new Date(item.Time);
+      });
+
       q.resolve(response);
     })
     .fail(function (error) {
