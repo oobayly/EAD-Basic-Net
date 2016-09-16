@@ -8,7 +8,7 @@ namespace eu.bayly.EADBasicNet {
     /// Gets the description of the specified enum value.
     /// </summary>
     public static string ToDescription(this Enum value) {
-      var attr = value.GetType().GetCustomAttribute<DescriptionAttribute>();
+      var attr = value.GetType().GetField(value.ToString()).GetCustomAttribute<DescriptionAttribute>();
       if (attr == null) {
         return value.ToString();
       } else {
