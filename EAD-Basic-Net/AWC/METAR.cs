@@ -53,7 +53,7 @@ namespace eu.bayly.EADBasicNet.AWC {
     /// Gets or sets the dew point? (Celsius)
     /// </summary>
     [XmlElement("dewpoint_c")]
-    public float? Dewpoint { get; set; }
+    public float? DewPoint { get; set; }
 
     /// <summary>
     /// Gets or sets the wind direction.
