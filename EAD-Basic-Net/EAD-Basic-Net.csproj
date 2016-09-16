@@ -188,6 +188,11 @@
     <Content Include="Global.asax" />
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\TestClientReferences.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\TestClientDialogs.cshtml" />
+    <Content Include="SimpleClient\images\m1.png" />
+    <Content Include="SimpleClient\images\m2.png" />
+    <Content Include="SimpleClient\images\m3.png" />
+    <Content Include="SimpleClient\images\m4.png" />
+    <Content Include="SimpleClient\images\m5.png" />
     <Content Include="SimpleClient\index.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
