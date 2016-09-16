@@ -1,4 +1,5 @@
-﻿using System;
+﻿using eu.bayly.EADBasicNet;
+using System;
 using System.Xml.Serialization;
 
 namespace eu.bayly.EADBasicNet.AWC {
@@ -8,7 +9,7 @@ namespace eu.bayly.EADBasicNet.AWC {
   [XmlRoot("sky_condition")]
   public class SkyCondition {
     /// <summary>
-    /// Gets or sets the type of Cover.
+    /// Gets or sets the type of cover.
     /// </summary>
     [XmlAttribute("sky_cover")]
     public CloudCover Cover { get; set; }
@@ -24,5 +25,15 @@ namespace eu.bayly.EADBasicNet.AWC {
     /// </summary>
     [XmlElement("cloud_type")]
     public string Type { get; set; }
+
+    /// <summary>
+    /// Gets the human readable text of the type of cover.
+    /// </summary>
+    [XmlIgnore]
+    public string CoverName {
+      get {
+        return Cover.ToDescription();
+      }
+    }
   }
 }
