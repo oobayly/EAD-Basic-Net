@@ -62,6 +62,12 @@
       flex: 1;
     }
 
+    .info .error {
+      font-weight: bold;
+      color: red;
+      text-align: center;
+    }
+
     .info .documents {
       max-height: 200px;
       overflow: auto;
@@ -80,6 +86,9 @@
 
     .info .documents .effective {
       font-size: smaller;
+    }
+
+    .info .metar {
     }
 
     .tabs.ui-tabs {
@@ -125,7 +134,9 @@
     <span class="lon">{{lon:Lon}}</span>
     <span class="elevation">{{number:Alt}} ft</span>
   </h3>
-  {{if hasDocuments}}
+  {{if error}}
+    <div class="error">{{html:error}}</div>
+  {{else}}
     <div class="tabs">
       <ul>
         <li><a href="#tabs-2">Aerodrome</a></li>
@@ -133,9 +144,10 @@
         <li><a href="#tabs-7">STAR</a></li>
         <li><a href="#tabs-8">Approach</a></li>
         <li><a href="#tabs-other">Other</a></li>
+        <li><a href="#tabs-metar">METAR</a></li>
       </ul>
       <div id="tabs-2" class="documents">
-        {{for aerodrome tmpl="#document"/}}
+        {{for aerodrome tmpl="#document" /}}
       </div>
       <div id="tabs-6" class="documents">
         {{props getRunways(sid) tmpl="#runwayDocuments" /}}
@@ -147,7 +159,10 @@
         {{props getRunways(approach) tmpl="#runwayDocuments" /}}
       </div>
       <div id="tabs-other" class="documents">
-        {{for other tmpl="#document"/}}
+        {{for other tmpl="#document" /}}
+      </div>
+      <div id="tabs-metar">
+        {{for metar tmpl="#metar" /}}
       </div>
     </div>
   {{/if}}
@@ -166,6 +181,12 @@
     <a href="{{attr:Uri}}" title="{{attr:Name}}" target="_blank">{{html:Title}}</a><br>
     <span class="effective" title="Effective from">{{date:Effective}}</span>
   </div>
+</script>
+
+<script type="text/x-jsrender" id="metar">
+  {{for Data}}
+    <pre>{{json:#data}}</pre>
+  {{/for}}
 </script>
 
 <script type="text/javascript">
@@ -381,6 +402,32 @@ $(document).ready(function () {
     return list;
   };
 
+  var getMETAR = function (params) {
+    var data = {
+    };
+
+    data = $.extend(data, params);
+
+    var q = $.Deferred();
+
+    $.ajax(
+      "../api/AWC/GetMETAR",
+      {
+        method: "POST",
+        traditional: true,
+        data: data
+      }
+    )
+    .done(function (response, status, request) {
+      q.resolve(response);
+    })
+    .fail(function (error) {
+      q.reject(error);
+    });
+
+    return q;
+  };
+
   var onCountryChanged = function (e) {
     onFilterChanged();
     window.localStorage.setItem("country", country.value);
@@ -416,24 +463,48 @@ $(document).ready(function () {
       });
     }
 
-    if (!marker.airport.documents) {
-      searchEAD({
+    // Need to push null tasks to preserve the order
+    var tasks = [];
+    if (marker.airport.documents) {
+      tasks.push(null);
+    } else {
+      tasks.push(searchEAD({
         Authority: marker.airport.ICAO.substr(0, 2),
         Name: "*" + marker.airport.ICAO + "*",
         Type: "Charts",
-      })
-      .done(function (documents) {
-        marker.airport.documents = documents;
-        showInfo(marker);
-      })
-      .fail(function (error) {
-        console.log(error);
-        showInfo(marker);
-      });
-      return;
+      }));
+    }
+    if (marker.airport.metar) {
+      tasks.push(null);
+    } else {
+      tasks.push(getMETAR({
+        HoursBeforeNow: 6,
+        MostRecent: "Each",
+        Stations: [marker.airport.ICAO]
+      }));
     }
 
-    showInfo(marker);
+    $.when.apply($, tasks)
+    .done(function (documents, metar) {
+      if (documents)
+        marker.airport.documents = documents;
+      if (metar)
+        marker.airport.metar = metar;
+
+      delete marker.airport.error;
+
+    }).fail(function (error) {
+      marker.airport.error = error;
+      console.log(error);
+
+    }).then(function () {
+      if (infoWindow.airport !== marker.airport) {
+        infoWindow.airport = marker.airport;
+        infoWindow.setContent($("#infoWindow").render(marker.airport));
+      }
+      infoWindow.open(map, marker);
+
+    });
   };
 
   var onMapBoundsChanged = function (e) {
@@ -544,15 +615,6 @@ $(document).ready(function () {
     });
 
     return q;
-  };
-
-  var showInfo = function (marker) {
-    if (infoWindow.airport !== marker.airport) {
-      infoWindow.airport = marker.airport;
-      infoWindow.setContent($("#infoWindow").render(marker.airport));
-    }
-
-    infoWindow.open(map, marker);
   };
 
   initialize();
