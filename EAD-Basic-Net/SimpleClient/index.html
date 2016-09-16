@@ -108,7 +108,7 @@
 
 <div class="container">
 <div class="options">
-  <label>Search:</label>
+  <label>Filter:</label>
   <select id="country"></select>
   <input type="text" id="filter" placeholder="Name, ICAO" />
 </div>
@@ -212,7 +212,7 @@ $(document).ready(function () {
       getRunways: function(list) {
         var resp = {};
 
-        var re = /RWY ([0-9]{1,2}[^\s]*?) /;
+        var re = /RWY ([0-9]{1,2}[^\s]*?)/;
         $.each(list, function (index, item) {
           var name = item.Title.match(re);
           name = name ? name[1] : "Other";
@@ -235,7 +235,6 @@ $(document).ready(function () {
   };
 
   var airports = [];
-  var countries = [];
   var map = null;
   var markerCluster = null;
   var infoWindow = null;
@@ -357,24 +356,19 @@ $(document).ready(function () {
     return bounds;
   };
 
-  var onCountryChanged = function (e) {
-    onFilterChanged();
-    window.localStorage.setItem("country", country.value);
-  };
+  var getFilteredAirports = function (source) {
+    source = source || airports;
 
-  var onFilterChanged = function (e) {
-    var filter = $("#filter").val() || "";
     var country = $("#country").val() || "";
+    var filter = $("#filter").val() || "";
 
     var list;
-    if (country.length == 2) {
-      var list = $.grep(airports, function (item) {
-        return (item.ICAO.indexOf(country) === 0);
-      });
-    } else {
-      var list = $.grep(airports, function (item) {
+    if (country) {
+      list = $.grep(source, function (item) {
         return (item.Country == country);
       });
+    } else {
+      list = source;
     }
 
     if (filter) {
@@ -382,6 +376,23 @@ $(document).ready(function () {
       list = $.grep(list, function (item) {
         return item.Name.match(re) || item.ICAO.match(re);
       });
+    }
+
+    return list;
+  };
+
+  var onCountryChanged = function (e) {
+    onFilterChanged();
+    window.localStorage.setItem("country", country.value);
+  };
+
+  var onFilterChanged = function (e) {
+    var list = getFilteredAirports();
+
+    // Don't zoom if either all airports or no airports are selected
+    if ((list.length == 0) || (list.length == airports.length)) {
+      onMapBoundsChanged();
+      return;
     }
 
     var bounds = getBounds(list);
@@ -426,6 +437,10 @@ $(document).ready(function () {
   };
 
   var onMapBoundsChanged = function (e) {
+    // Don't do anything if the info window is displayed
+    if (infoWindow && infoWindow.getMap())
+      return;
+
     // Remove all the existing markers
     markerCluster.clearMarkers();
 
@@ -438,6 +453,7 @@ $(document).ready(function () {
     var list = $.grep(airports, function (item) {
       return bounds.contains(item.Position);
     });
+    list = getFilteredAirports(list);
 
     var markers = [];
     $.each(list, function (index, item) {
@@ -461,19 +477,20 @@ $(document).ready(function () {
   var populateCountries = function () {
     var q = $.Deferred();
 
-    var temp = [];
+    var countries = [];
     $.each(airports, function (index, item) {
-      if (temp.indexOf(item.Country) === -1)
-        temp.push(item.Country);
+      if (countries.indexOf(item.Country) === -1)
+        countries.push(item.Country);
     });
-
-    temp.sort();
-    temp.splice(0, 0, "Any Country");
-
-    countries = temp;
+    countries.sort();
 
     var select = $("#country");
     select.find("option").remove();
+    $("<option>", {
+      value: "",
+      text: "Any Country"
+    }).appendTo(select);
+
     $.each(countries, function (index, item) {
       $("<option>", {
         value: item,
@@ -483,10 +500,7 @@ $(document).ready(function () {
     });
 
     // Use the previous selected country, but don't immediately zoom to it
-    var previous = window.localStorage.getItem("country");
-    if (previous)
-      select.val(previous);
-
+    select.val(window.localStorage.getItem("country") || "");
     select.on("change", onCountryChanged);
 
     q.resolve();
