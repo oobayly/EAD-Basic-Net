@@ -65,8 +65,12 @@
       overflow: auto;
     }
 
-    .info .documents > div+div {
-      margin-top: 5px;
+    .info .documents div+div {
+      margin-top: .5em;
+    }
+
+    .info .documents .title {
+      font-weight: bold;
     }
 
     .info .documents a {
@@ -74,6 +78,18 @@
 
     .info .documents .effective {
       font-size: smaller;
+    }
+
+    .tabs.ui-tabs {
+      border: 0px;
+    }
+
+    .tabs.ui-tabs .ui-tabs-nav {
+      border: 0px;
+      background-color: transparent;
+    }
+    .ui-tabs .ui-tabs-panel {
+      padding: .5em;
     }
 
     .debug {
@@ -115,47 +131,36 @@
       <li><a href="#tabs-other">Other</a></li>
     </ul>
     <div id="tabs-2" class="documents">
-      {{for aerodrome}}
-      <div>
-        <a href="{{attr:Uri}}" title="{{attr:Name}}" target="_blank">{{html:Title}}</a><br>
-        <span class="effective" title="Effective from">{{date:Effective}}</span>
-      </div>
-      {{/for}}
+      {{for aerodrome tmpl="#document"/}}
     </div>
     <div id="tabs-6" class="documents">
-      {{for sid}}
-      <div>
-        <a href="{{attr:Uri}}" title="{{attr:Name}}" target="_blank">{{html:Title}}</a><br>
-        <span class="effective" title="Effective from">{{date:Effective}}</span>
-      </div>
-      {{/for}}
+      {{props getRunways(sid) tmpl="#runwayDocuments" /}}
     </div>
     <div id="tabs-7" class="documents">
-      {{for star}}
-      <div>
-        <a href="{{attr:Uri}}" title="{{attr:Name}}" target="_blank">{{html:Title}}</a><br>
-        <span class="effective" title="Effective from">{{date:Effective}}</span>
-      </div>
-      {{/for}}
+      {{props getRunways(star) tmpl="#runwayDocuments" /}}
     </div>
     <div id="tabs-8" class="documents">
-      {{for approach}}
-      <div>
-        <a href="{{attr:Uri}}" title="{{attr:Name}}" target="_blank">{{html:Title}}</a><br>
-        <span class="effective" title="Effective from">{{date:Effective}}</span>
-      </div>
-      {{/for}}
+      {{props getRunways(approach) tmpl="#runwayDocuments" /}}
     </div>
     <div id="tabs-other" class="documents">
-      {{for aerodrome}}
-      <div>
-        <a href="{{attr:Uri}}" title="{{attr:Name}}" target="_blank">{{html:Title}}</a><br>
-        <span class="effective" title="Effective from">{{date:Effective}}</span>
-      </div>
-      {{/for}}
+      {{for other tmpl="#document"/}}
     </div>
   </div>
 </div>
+</script>
+
+<script type="text/x-jsrender" id="runwayDocuments">
+  <div class="group">
+    <div class="title">Runway {{html:key}}</div>
+    {{for prop tmpl="#document" /}}
+  </div>
+</script>
+
+<script type="text/x-jsrender" id="document">
+  <div>
+    <a href="{{attr:Uri}}" title="{{attr:Name}}" target="_blank">{{html:Title}}</a><br>
+    <span class="effective" title="Effective from">{{date:Effective}}</span>
+  </div>
 </script>
 
 <script type="text/javascript">
@@ -170,7 +175,16 @@ $(document).ready(function () {
 
       get approach() {
         return $.grep(this.documents, function (item) {
-          return item.Title.match(/Approach/i);
+          return (item.Title.indexOf("IAC") != -1) || item.Title.match(/Approach/i);
+        });
+      },
+
+      get other() {
+        return $.grep(this.documents, function (item) {
+          return !(
+            item.Title.match(/SID|STAR|IAC/) ||
+            item.Title.match(/Aerodrome|Parking|Docking|Approach/i)
+            );
         });
       },
 
@@ -184,6 +198,23 @@ $(document).ready(function () {
         return $.grep(this.documents, function (item) {
           return item.Title.match(/STAR/);
         });
+      },
+
+      getRunways: function(list) {
+        var resp = {};
+
+        var re = /RWY ([0-9]{1,2}[^\s]*?) /;
+        $.each(list, function (index, item) {
+          var name = item.Title.match(re);
+          name = name ? name[1] : "Other";
+          var list = resp[name];
+          if (!list) {
+            list = resp[name] = [];
+          }
+          list.push(item);
+        });
+
+        return resp;
       },
     };
 
@@ -484,8 +515,6 @@ $(document).ready(function () {
     if (infoWindow.airport !== marker.airport) {
       infoWindow.airport = marker.airport;
       infoWindow.setContent($("#infoWindow").render(marker.airport));
-
-      console.log(infoWindow.airport);
     }
 
     infoWindow.open(map, marker);
