@@ -9,178 +9,34 @@
   <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
   <script type="text/javascript" src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/0.9.80/jsrender.min.js"></script>
-  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=geometry&v=3&key="></script>
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=geometry&v=3&key=AIzaSyC875DXmLWcGkP_2EOYr82-KAi8MOZdmi0"></script>
   <script type="text/javascript" src="https://npmcdn.com/geodesy@1.1.0/dms.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-marker-clusterer/1.0.0/markerclusterer_compiled.js"></script>
 
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/mobile.css" />
   <link rel=" stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
 
-  <style type="text/css">
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      font-family: sans-serif;
-    }
-
-    .container {
-      display: flex;
-      flex-direction: column;
-      padding: 1em;
-      height: calc(100% - 2em);
-    }
-
-      .container > * {
-      }
-
-      .container .options {
-        height: auto;
-        padding-bottom: 1em;
-      }
-
-    .map {
-      flex: 1;
-    }
-
-    .info {
-      height: 400px;
-      width: 600px;
-    }
-
-    .info > * {
-      margin: 1em 0 0 0;
-    }
-
-    .info h1 {
-      border-bottom: 1px solid black;
-    }
-
-    .info h2 {
-    }
-
-    .info .location {
-      display: flex;
-      flex-direction: row;
-      max-width: 250px;
-    }
-
-    .info .location > * {
-      flex: 1;
-    }
-
-    .info .error {
-      font-weight: bold;
-      color: red;
-      text-align: center;
-    }
-
-    .info h3 {
-      margin: .5em 0;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .info .documents {
-    }
-
-    .info .documents div+div {
-      margin-top: .5em;
-    }
-
-    .info .documents .title {
-      font-weight: bold;
-    }
-
-    .info .documents a {
-    }
-
-    .info .documents .effective {
-      font-size: smaller;
-    }
-
-    .info dl {
-      display: flex;
-      flex-wrap: wrap;
-    }
-
-    .info dl > * {
-      margin: 0;
-      padding: .25em 0;
-    }
-
-    .info dl dt {
-      width: 33%;
-      max-width: 8em;
-    }
-
-    .info dl dd {
-      width: 67%;
-    }
-
-    .info .metar {
-    }
-
-    .tabs.ui-tabs {
-      border: 0px;
-    }
-
-    .tabs.ui-tabs .ui-tabs-nav {
-      border: 0px;
-      border-bottom: 1px solid #ddd;
-      background-color: transparent;
-    }
-
-    .ui-tabs .ui-tabs-panel {
-      padding: .5em;
-      max-height: 200px; /* Hack */
-      overflow: auto;
-    }
-
-    .debug {
-      display: none;
-      background-color: rgba(255, 0, 0, .5);
-      overflow: auto;
-      width: 100%;
-      height: 100%;
-    }
-
-    @media screen and (orientation : portrait) and (max-device-width: 480px),
-    screen and (orientation : landscape) and (max-device-height: 480px) {
-      .container {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-      }
-    }
-
-    @media screen and (orientation : portrait) and (max-device-width: 480px) {
-      .info {
-        font-size: 75%;
-        width: 300px;
-        height: 400px;
-      }
-    }
-
-    @media screen and (orientation : landscape) and (max-device-height: 480px) {
-      .info {
-        font-size: 75%;
-        width: 400px;
-        height: 300px;
-      }
-    }
-  </style>
 </head>
 
 <body>
 
 <div class="container">
 <div class="options">
-  <label>Filter:</label>
-  <select id="country"></select>
-  <input type="text" id="filter" placeholder="Name, ICAO" />
+  <div class="row">
+    <div class="col">
+      <select id="country">
+        <option>Any Country</option>
+      </select>
+    </div>
+    <div class="col">
+      <input type="text" id="filter" placeholder="Name, ICAO" list="filter_options" />
+      <datalist id="filter_options"></datalist>
+    </div>
+  </div>
 </div>
 <div class="map"></div>
 </div>
-<pre class="debug"></pre>
 
 <script type="text/x-jsrender" id="infoWindow">
 <div class="info">
@@ -240,10 +96,10 @@
   </div>
 </script>
 
-  <script type="text/x-jsrender" id="metar">
-    {{for Data}}
-    <h3>METAR report at {{:Time.toUTCString()}}</h3>
-    <div>
+<script type="text/x-jsrender" id="metar">
+  {{for Data}}
+  <h3>METAR report at {{:Time.toUTCString()}}</h3>
+  <div>
       <dl>
         {{if Temp}}
           <dt>Temp</dt>
@@ -316,8 +172,8 @@
         {{/if}}
       </dl>
     </div>
-  {{/for}}
-  </script>
+{{/for}}
+</script>
 
 <script type="text/javascript">
 $(document).ready(function () {
@@ -514,13 +370,9 @@ $(document).ready(function () {
     var filter = $("#filter").val() || "";
 
     var list;
-    if (country) {
-      list = $.grep(source, function (item) {
-        return (item.Country == country);
-      });
-    } else {
-      list = source;
-    }
+    list = $.grep(source, function (item) {
+      return (item.Country == country) || (country === "");
+    });
 
     if (filter) {
       var re = new RegExp(filter, "i");
@@ -563,8 +415,22 @@ $(document).ready(function () {
   };
 
   var onCountryChanged = function (e) {
+    var country = $("#country").val() || "";
+    var list = $.grep(airports, function (item) {
+      return (item.Country == country) || (country === "");
+    });
+
+    var datalist = $("#filter_options");
+    datalist.find("option").remove();
+    $.each(list, function (index, item) {
+      $("<option>", {
+        value: item.Name,
+      })
+      .appendTo(datalist);
+    });
+
     onFilterChanged();
-    window.localStorage.setItem("country", country.value);
+    window.localStorage.setItem("country", country);
   };
 
   var onFilterChanged = function (e) {

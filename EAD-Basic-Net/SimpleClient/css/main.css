@@ -1,0 +1,146 @@
+﻿html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+  height: calc(100% - 2em);
+}
+
+.container > * {
+}
+
+.options {
+  height: auto;
+  padding-bottom: 1em;
+}
+
+.options select, .options input {
+  box-sizing: border-box;
+  height: 1.5em;
+  width: 100%;
+}
+
+.options .row {
+  display: flex;
+  flex-direction: row;
+}
+
+.options .row .col {
+  padding: .25em .5em .25em 0em;
+  flex: 1;
+}
+
+.options .row .col:last-child {
+  padding-right: 0;
+}
+
+.map {
+  flex: 1;
+}
+
+.info {
+  height: 400px;
+  width: 600px;
+}
+
+.info > * {
+  margin: 1em 0 0 0;
+}
+
+.info h1 {
+  border-bottom: 1px solid black;
+}
+
+.info h2 {
+}
+
+.info .location {
+  display: flex;
+  flex-direction: row;
+  max-width: 250px;
+}
+
+.info .location > * {
+  flex: 1;
+}
+
+.info .error {
+  font-weight: bold;
+  color: red;
+  text-align: center;
+}
+
+.info h3 {
+  margin: .5em 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.info .documents {
+}
+
+.info .documents div+div {
+  margin-top: .5em;
+}
+
+.info .documents .title {
+  font-weight: bold;
+}
+
+.info .documents a {
+}
+
+.info .documents .effective {
+  font-size: smaller;
+}
+
+.info dl {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.info dl > * {
+  margin: 0;
+  padding: .25em 0;
+}
+
+.info dl dt {
+  width: 33%;
+  max-width: 8em;
+}
+
+.info dl dd {
+  width: 67%;
+}
+
+.info .metar {
+}
+
+.tabs.ui-tabs {
+  border: 0px;
+}
+
+.tabs.ui-tabs .ui-tabs-nav {
+  border: 0px;
+  border-bottom: 1px solid #ddd;
+  background-color: transparent;
+}
+
+.ui-tabs .ui-tabs-panel {
+  padding: .5em;
+  max-height: 200px; /* Hack */
+  overflow: auto;
+}
+
+.debug {
+  display: none;
+  background-color: rgba(255, 0, 0, .5);
+  overflow: auto;
+  width: 100%;
+  height: 100%;
+}
