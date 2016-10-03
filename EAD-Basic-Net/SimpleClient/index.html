@@ -261,6 +261,9 @@ $(document).ready(function () {
     });
     markerCluster = new MarkerClusterer(map, null, { imagePath: "images/m" });
 
+    map.addListener("click", removeFocus);
+    map.addListener("drag", removeFocus);
+
     map.addListener("maptypeid_changed", function (e) {
       var config = JSON.parse(window.localStorage.getItem("mapConfig") || "{}");
       config.mapTypeId = map.getMapTypeId();
@@ -454,6 +457,7 @@ $(document).ready(function () {
   };
 
   var onMarkerClick = function (e) {
+    removeFocus();
     var marker = this;
 
     if (!infoWindow) {
@@ -578,6 +582,10 @@ $(document).ready(function () {
     q.resolve();
     return q.promise();
   }
+
+  var removeFocus = function () {
+    $(":focus").blur();
+  };
 
   var searchEAD = function (params) {
     var data = {

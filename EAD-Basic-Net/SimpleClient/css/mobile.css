@@ -1,5 +1,5 @@
-﻿@media screen and (orientation : portrait) and (max-device-width: 480px),
-screen and (orientation : landscape) and (max-device-height: 480px) {
+﻿@media screen and (max-device-width: 480px),
+screen and (max-device-height: 480px) {
   .container {
     margin: 0;
     padding: 0;
@@ -11,7 +11,7 @@ screen and (orientation : landscape) and (max-device-height: 480px) {
   }
 }
 
-@media screen and (orientation : portrait) and (max-device-width: 480px) {
+@media screen and (max-device-width: 480px) {
   .options .row {
     flex-direction: column;
   }
@@ -28,7 +28,7 @@ screen and (orientation : landscape) and (max-device-height: 480px) {
   }
 }
 
-@media screen and (orientation : landscape) and (max-device-height: 480px) {
+@media screen and (max-device-height: 480px) {
   .info {
     font-size: 75%;
     width: 400px;
