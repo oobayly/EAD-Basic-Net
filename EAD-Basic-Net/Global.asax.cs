@@ -27,7 +27,7 @@ namespace eu.bayly.EADBasicNet {
           //These headers are handling the "pre-flight" OPTIONS call sent by the browser
           HttpContext.Current.Response.StatusCode = (int)System.Net.HttpStatusCode.OK;
           HttpContext.Current.Response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Accept");
-          HttpContext.Current.Response.AddHeader("Access-Control-Allow-Methods", "GET, POST,OPTIONS");
+          HttpContext.Current.Response.AddHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
           HttpContext.Current.Response.AddHeader("Access-Control-Expose-Headers", "Content-Disposition, Last-Modified");
           HttpContext.Current.Response.End();
         }
