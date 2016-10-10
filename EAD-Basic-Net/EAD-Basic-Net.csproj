@@ -20,6 +20,8 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -45,6 +47,14 @@
       <HintPath>packages\Csv.1.0.11\lib\dotnet\Csv.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="HtmlAgilityPack, Version=1.4.9.5, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <HintPath>packages\HtmlAgilityPack.1.4.9.5\lib\Net45\HtmlAgilityPack.dll</HintPath>
       <Private>True</Private>
@@ -54,8 +64,32 @@
       <HintPath>packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MySql.Data.Entity.EF6, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>packages\MySql.Data.Entity.6.9.9\lib\net45\MySql.Data.Entity.EF6.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SQLite.CodeFirst, Version=1.2.4.16, Culture=neutral, PublicKeyToken=eb96ba0a78d831a7, processorArchitecture=MSIL">
+      <HintPath>packages\SQLite.CodeFirst.1.2.4.16\lib\net45\SQLite.CodeFirst.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data.SQLite, Version=1.0.103.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>packages\System.Data.SQLite.Core.1.0.103\lib\net45\System.Data.SQLite.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data.SQLite.EF6, Version=1.0.103.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>packages\System.Data.SQLite.EF6.1.0.103\lib\net45\System.Data.SQLite.EF6.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data.SQLite.Linq, Version=1.0.103.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>packages\System.Data.SQLite.Linq.1.0.103\lib\net45\System.Data.SQLite.Linq.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Net.Http" />
@@ -199,6 +233,7 @@
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="connectionStrings.secret.config" />
     <None Include="Properties\PublishProfiles\EAD-Basic-Net.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -284,6 +319,14 @@
     </Compile>
     <Compile Include="OpenFlights\Airport.cs" />
     <Compile Include="OpenFlights\Enumerations.cs" />
+    <Compile Include="OurAirports\Airport.cs" />
+    <Compile Include="OurAirports\Attributes.cs" />
+    <Compile Include="OurAirports\Country.cs" />
+    <Compile Include="OurAirports\Frequency.cs" />
+    <Compile Include="OurAirports\NavAid.cs" />
+    <Compile Include="OurAirports\Region.cs" />
+    <Compile Include="OurAirports\Runway.cs" />
+    <Compile Include="OurAirports\DataContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EADController.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -357,6 +400,13 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <Import Project="packages\System.Data.SQLite.Core.1.0.103\build\net45\System.Data.SQLite.Core.targets" Condition="Exists('packages\System.Data.SQLite.Core.1.0.103\build\net45\System.Data.SQLite.Core.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\System.Data.SQLite.Core.1.0.103\build\net45\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\System.Data.SQLite.Core.1.0.103\build\net45\System.Data.SQLite.Core.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
