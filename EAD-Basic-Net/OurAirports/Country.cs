@@ -7,7 +7,7 @@ namespace eu.bayly.EADBasicNet.OurAirports {
   [Table("countries")]
   [Uri("http://ourairports.com/data/countries.csv")]
   public class Country {
-    public ICollection<Airport> Airports { get; set; }
+    //public ICollection<Airport> Airports { get; set; }
 
     [Column("code")]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]

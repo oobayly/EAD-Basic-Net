@@ -26,8 +26,8 @@ namespace eu.bayly.EADBasicNet.OurAirports {
     [Required]
     public string Continent { get; set; }
 
-    [ForeignKey("CountryCode")]
-    public Country Country { get; set; }
+    //[ForeignKey("CountryCode")]
+    //public Country Country { get; set; }
 
     [Column("iso_country")]
     [Index]
