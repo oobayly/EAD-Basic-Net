@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace eu.bayly.EADBasicNet.OurAirports {
   /// <summary>
@@ -20,6 +21,7 @@ namespace eu.bayly.EADBasicNet.OurAirports {
   [DbConfigurationType(typeof(MySql.Data.Entity.MySqlEFConfiguration))]
 #endif
   public class DataContext : DbContext {
+    #region Properties
     /// <summary>
     /// Gets or sets the Airports data.
     /// </summary>
@@ -49,7 +51,9 @@ namespace eu.bayly.EADBasicNet.OurAirports {
     /// Gets or sets the Runways data.
     /// </summary>
     public DbSet<Runway> Runways { get; set; }
+    #endregion
 
+    #region Constructors
     /// <summary>
     /// Creates an instance of the DataContext class.
     /// </summary>
@@ -57,7 +61,9 @@ namespace eu.bayly.EADBasicNet.OurAirports {
       : base() {
       Configuration.LazyLoadingEnabled = false;
     }
+    #endregion
 
+    #region Overrides
     /// <summary>
     /// This method is called when the model for a derived context has been initialized.
     /// </summary>
@@ -73,6 +79,16 @@ namespace eu.bayly.EADBasicNet.OurAirports {
 #endif
 
       base.OnModelCreating(modelBuilder);
+    }
+    #endregion
+
+    #region Methods
+    private async Task EmptyTable<T>() {
+      string tableName = typeof(T).GetCustomAttribute<TableAttribute>().Name;
+      using (var comm = Database.Connection.CreateCommand()) {
+        comm.CommandText = string.Format("DELETE FROM {0};", tableName);
+        await comm.ExecuteNonQueryAsync();
+      };
     }
 
     /// <summary>
@@ -92,28 +108,38 @@ namespace eu.bayly.EADBasicNet.OurAirports {
     /// <summary>
     /// Clears the database and imports all the data.
     /// </summary>
-    public void ImportAll(DirectoryInfo cacheDir = null) {
-      Frequencies.RemoveRange(Frequencies.ToArray());
-      Runways.RemoveRange(Runways.ToArray());
-      NavAids.RemoveRange(NavAids.ToArray());
-      Airports.RemoveRange(Airports.ToArray());
-      Regions.RemoveRange(Regions.ToArray());
-      Countries.RemoveRange(Countries.ToArray());
-      SaveChanges();
+    public async Task ImportAllAsync(DirectoryInfo cacheDir = null) {
+      // Make sure the connection is open
+      Database.Connection.Open();
 
-      Import<Country>(cacheDir);
-      Import<Region>(cacheDir);
-      Import<Airport>(cacheDir);
-      Import<Frequency>(cacheDir);
-      Import<Runway>(cacheDir);
-      Import<NavAid>(cacheDir);
-      SaveChanges();
+      // Empty the tables first
+      Task.WaitAll(
+        EmptyTable<Frequency>(),
+        EmptyTable<Runway>(),
+        EmptyTable<NavAid>()
+        );
+      await EmptyTable<Airport>();
+      await EmptyTable<Region>();
+      await EmptyTable<Country>();
+
+      // These need to be done sequentially to avoid FK constraints
+      await ImportAsync<Country>(cacheDir);
+      await ImportAsync<Region>(cacheDir);
+      await ImportAsync<Airport>(cacheDir);
+
+      // These can be done in parallel
+      Task.WaitAll(
+        ImportAsync<Frequency>(cacheDir),
+        ImportAsync<Runway>(cacheDir),
+        ImportAsync<NavAid>(cacheDir)
+        );
+      await SaveChangesAsync();
     }
 
     /// <summary>
     /// Imports data from OurAirports into the specified type.
     /// </summary>
-    public void Import<T>(DirectoryInfo cacheDir = null) where T : class, new() {
+    public async Task ImportAsync<T>(DirectoryInfo cacheDir = null) where T : class, new() {
       var uri = typeof(T).GetCustomAttribute<UriAttribute>().Uri;
 
       FileInfo localFile = null;
@@ -130,78 +156,82 @@ namespace eu.bayly.EADBasicNet.OurAirports {
         req.IfModifiedSince = lastModified.Value;
       }
 
-      HttpWebResponse resp = null;
       try {
-        resp = (HttpWebResponse)req.GetResponse();
-        using (var stream = resp.GetResponseStream()) {
-          if (localFile == null) {
-            Import<T>(stream);
-            return;
+        using (var resp = await req.GetResponseAsync() as HttpWebResponse) {
+          using (var stream = resp.GetResponseStream()) {
+            if (localFile == null) {
+              await ImportAsync<T>(stream);
 
-          } else {
-            using (var fs = localFile.OpenWrite()) {
-              stream.CopyTo(fs);
+            } else {
+              using (var fs = localFile.OpenWrite()) {
+                stream.CopyTo(fs);
+              }
+
+              if (resp.LastModified != DateTime.MinValue) {
+                localFile.LastWriteTimeUtc = resp.LastModified.ToUniversalTime();
+              }
+
+              localFile.Refresh();
             }
-
-            if (resp.LastModified != DateTime.MinValue) {
-              localFile.LastWriteTimeUtc = resp.LastModified.ToUniversalTime();
-            }
-
-            localFile.Refresh();
-
           }
         }
 
       } catch (WebException ex) {
-        resp = (HttpWebResponse)(ex.Response);
-        if (resp.StatusCode != HttpStatusCode.NotModified) {
-          throw;
+        using (var resp = ex.Response as HttpWebResponse) {
+          if (resp.StatusCode != HttpStatusCode.NotModified) {
+            throw;
+          }
         }
-
-      } finally {
-        if (resp != null)
-          resp.Dispose();
 
       }
 
-      Import<T>(localFile);
+      await ImportAsync<T>(localFile);
     }
 
     /// <summary>
     /// Imports data from a local file into the specified type.
     /// </summary>
-    public void Import<T>(FileInfo file) where T : class, new() {
+    public async Task ImportAsync<T>(FileInfo file) where T : class, new() {
       using (var fs = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read)) {
-        Import<T>(fs);
+        await ImportAsync<T>(fs);
       }
     }
 
     /// <summary>
     /// Imports data from OurAirports into the specified type.
     /// </summary>
-    public void Import(string type, DirectoryInfo cacheDir = null) {
+    public async Task ImportAsync(string type, DirectoryInfo cacheDir = null) {
       switch (type) {
         case "Airport":
-          Import<Airport>(cacheDir);
+          await ImportAsync<Airport>(cacheDir);
           break;
         case "Country":
-          Import<Country>(cacheDir);
+          await ImportAsync<Country>(cacheDir);
           break;
         case "Frequency":
-          Import<Frequency>(cacheDir);
+          await ImportAsync<Frequency>(cacheDir);
           break;
         case "NavAid":
-          Import<NavAid>(cacheDir);
+          await ImportAsync<NavAid>(cacheDir);
           break;
         case "Region":
-          Import<Region>(cacheDir);
+          await ImportAsync<Region>(cacheDir);
           break;
         case "Runway":
-          Import<Runway>(cacheDir);
+          await ImportAsync<Runway>(cacheDir);
           break;
         default:
           throw new ArgumentException("'" + type + "' is not valid value.", "type");
       }
+    }
+
+    /// <summary>
+    /// Asynchronously imports data into the specified type.
+    /// </summary>
+    protected async Task ImportAsync<T>(Stream stream) where T : class, new() {
+      await Task.Run(() => {
+        Import<T>(stream);
+      });
     }
 
     /// <summary>
@@ -258,5 +288,6 @@ namespace eu.bayly.EADBasicNet.OurAirports {
       set.AddRange(list);
       this.SaveChanges();
     }
+    #endregion
   }
 }

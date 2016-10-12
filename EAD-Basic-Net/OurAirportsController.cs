@@ -6,7 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
+using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.OutputCache.V2;
@@ -221,25 +224,32 @@ namespace eu.bayly.EADBasicNet {
     /// Imports the data.
     /// </summary>
     [HttpGet]
-    public IHttpActionResult Import(string type) {
-      try {
-        var appData = GetAppData();
+    public async Task<IHttpActionResult> Import(string type) {
+      var appData = GetAppData();
+      await ImportAsync(new CancellationToken(), appData, type);
+      return Ok();
+    }
 
-        var db = new DataContext();
+    /// <summary>
+    /// Imports the data.
+    /// </summary>
+    [HttpGet]
+    public async Task<IHttpActionResult> ImportAsync(string type) {
+      var appData = GetAppData();
+      HostingEnvironment.QueueBackgroundWorkItem(ct => ImportAsync(ct, appData, type));
+      return Ok();
+    }
 
-        if (string.IsNullOrEmpty(type)) {
-          db.ImportAll(appData);
-        } else {
-          db.Import(type, appData);
-        }
+    private async Task<CancellationToken> ImportAsync(CancellationToken ct, DirectoryInfo appData, string type) {
+      var db = new DataContext();
 
-        return Ok();
-        //return Ok(db.Countries.ToArray());
-
-      } catch (Exception ex) {
-        return InternalServerError(ex);
-
+      if (string.IsNullOrEmpty(type)) {
+        await db.ImportAllAsync(appData);
+      } else {
+        await db.ImportAsync(type, appData);
       }
+
+      return ct;
     }
 
     /// <summary>
