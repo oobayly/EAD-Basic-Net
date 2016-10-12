@@ -3,36 +3,26 @@ using System.ComponentModel;
 using System.Globalization;
 
 namespace eu.bayly.EADBasicNet.OurAirports {
-  public class EnumNameAttribute : Attribute {
-    public string Name { get; set; }
-
-    public EnumNameAttribute(string name) {
-      this.Name = name;
-    }
-  }
-
+  /// <summary>
+  /// Represents an attribute used for specifying a class's Uri.
+  /// </summary>
   public class UriAttribute : Attribute {
+    /// <summary>
+    /// Gets or sets the attribute's Uri.
+    /// </summary>
     public Uri Uri { get; set; }
 
+    /// <summary>
+    /// Creates an instance of the UriAttribute class.
+    /// </summary>
     public UriAttribute(string uri) : this(new Uri(uri)) {
     }
 
+    /// <summary>
+    /// Creates an instance of the UriAttribute class.
+    /// </summary>
     public UriAttribute(Uri uri) {
       this.Uri = uri;
-    }
-  }
-
-  public class NullIntConverter : TypeConverter {
-    public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) {
-      if ((value is string) && (value != null)) {
-        try {
-
-        } catch {
-          return null;
-        }
-      }
-
-      return base.ConvertFrom(context, culture, value);
     }
   }
 }

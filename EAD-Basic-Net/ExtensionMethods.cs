@@ -3,6 +3,9 @@ using System.ComponentModel;
 using System.Reflection;
 
 namespace eu.bayly.EADBasicNet {
+  /// <summary>
+  /// A static class containing helper extension methods.
+  /// </summary>
   public static class ExtensionMethods {
     /// <summary>
     /// Gets the description of the specified enum value.

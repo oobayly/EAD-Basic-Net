@@ -12,6 +12,9 @@ using System.Web.Http.Description;
 using WebApi.OutputCache.V2;
 
 namespace eu.bayly.EADBasicNet {
+  /// <summary>
+  /// The web service used for querying the OurAirports database.
+  /// </summary>
   public class OurAirportsController : ApiControllerBase {
     #region Constants
     /// <summary>
@@ -126,6 +129,7 @@ namespace eu.bayly.EADBasicNet {
     /// <summary>
     /// Gets the specified navaid.
     /// </summary>
+    /// <param name="countryCode">The 2-character ISO code of the country in which the NavAid is located.</param>
     /// <param name="ident">The navaid's ICAO ident.</param>
     [HttpGet]
     [CacheOutput(ClientTimeSpan = CacheDuration)]
@@ -233,7 +237,6 @@ namespace eu.bayly.EADBasicNet {
         //return Ok(db.Countries.ToArray());
 
       } catch (Exception ex) {
-        throw;
         return InternalServerError(ex);
 
       }
