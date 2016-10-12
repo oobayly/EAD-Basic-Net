@@ -25,6 +25,11 @@ namespace eu.bayly.EADBasicNet.OurAirports {
     }
 
     /// <summary>
+    /// Gets or sets most Easterly point to search for.
+    /// </summary>
+    public float East { get; set; }
+
+    /// <summary>
     /// Gets or sets the ident to be searched for.
     /// </summary>
     public string Ident {
@@ -38,31 +43,15 @@ namespace eu.bayly.EADBasicNet.OurAirports {
       }
     }
 
-
-    /// <summary>
-    /// Gets or sets maximum latitude.
-    /// </summary>
-    public float LatMax { get; set; }
-
-    /// <summary>
-    /// Gets or sets minimum latitude.
-    /// </summary>
-    public float LatMin { get; set; }
-
-    /// <summary>
-    /// Gets or sets maximum longitude.
-    /// </summary>
-    public float LonMax { get; set; }
-
-    /// <summary>
-    /// Gets or sets minimum latitude.
-    /// </summary>
-    public float LonMin { get; set; }
-
     /// <summary>
     /// Gets or sets the name to be searched for.
     /// </summary>
     public string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets most Northerly point to search for.
+    /// </summary>
+    public float North { get; set; }
 
     /// <summary>
     /// Gets or sets the region code to be searched for.
@@ -78,6 +67,15 @@ namespace eu.bayly.EADBasicNet.OurAirports {
       }
     }
 
+    /// <summary>
+    /// Gets or sets most Southerly point to search for.
+    /// </summary>
+    public float South { get; set; }
+
+    /// <summary>
+    /// Gets or sets most Westerly point to search for.
+    /// </summary>
+    public float West { get; set; }
 
     /// <summary>
     /// Creates an instance of the SearchArgs class.
@@ -85,10 +83,10 @@ namespace eu.bayly.EADBasicNet.OurAirports {
     public SearchArgs() {
       CountryCode = "";
       Ident = "";
-      LatMax = 90;
-      LatMin = -90;
-      LonMax = 180;
-      LonMin = -180;
+      North = 90;
+      South = -90;
+      East = 180;
+      West = -180;
       Name = "";
       RegionCode = "";
     }

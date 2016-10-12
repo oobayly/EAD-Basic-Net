@@ -255,7 +255,7 @@ namespace eu.bayly.EADBasicNet {
             && ((args.RegionCode == "") || (x.RegionCode == args.RegionCode))
             && ((args.Ident == "") || (x.Ident == args.Ident))
             && ((args.Name == "") || (x.Name.Contains(args.Name)))
-            && (x.Lat >= args.LatMin) && (x.Lat <= args.LatMax) && (x.Lon >= args.LonMin) && (x.Lon <= args.LonMax)
+            && (x.Lat >= args.South) && (x.Lat <= args.North) && (x.Lon >= args.West) && (x.Lon <= args.East)
             )
           .OrderBy(x => x.Name)
           .Select(x => new {
@@ -288,7 +288,7 @@ namespace eu.bayly.EADBasicNet {
             ((args.CountryCode == "") || (x.CountryCode == args.CountryCode))
             && ((args.Ident == "") || (x.Ident == args.Ident))
             && ((args.Name == "") || (x.Name.Contains(args.Name)))
-            && (x.Lat >= args.LatMin) && (x.Lat <= args.LatMax) && (x.Lon >= args.LonMin) && (x.Lon <= args.LonMax)
+            && (x.Lat >= args.South) && (x.Lat <= args.North) && (x.Lon >= args.West) && (x.Lon <= args.East)
             )
           .OrderBy(a => a.Name)
           .Select(a => new {
