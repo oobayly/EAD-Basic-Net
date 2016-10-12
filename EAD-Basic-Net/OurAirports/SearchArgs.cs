@@ -8,15 +8,36 @@ namespace eu.bayly.EADBasicNet.OurAirports {
   /// Represents OurAirport search arguments for an airport or navaid.
   /// </summary>
   public class SearchArgs {
+    private string countryCode, ident, regionCode;
+
     /// <summary>
     /// Gets or sets the country code to be searched for.
     /// </summary>
-    public string CountryCode { get; set; }
+    public string CountryCode {
+      get {
+        return countryCode;
+      }
+      set {
+        if (value != null)
+          value = value.ToUpper();
+        countryCode = value;
+      }
+    }
 
     /// <summary>
     /// Gets or sets the ident to be searched for.
     /// </summary>
-    public string Ident { get; set; }
+    public string Ident {
+      get {
+        return ident;
+      }
+      set {
+        if (value != null)
+          value = value.ToUpper();
+        ident = value;
+      }
+    }
+
 
     /// <summary>
     /// Gets or sets maximum latitude.
@@ -46,7 +67,17 @@ namespace eu.bayly.EADBasicNet.OurAirports {
     /// <summary>
     /// Gets or sets the region code to be searched for.
     /// </summary>
-    public string RegionCode { get; set; }
+    public string RegionCode {
+      get {
+        return regionCode;
+      }
+      set {
+        if (value != null)
+          value = value.ToUpper();
+        regionCode = value;
+      }
+    }
+
 
     /// <summary>
     /// Creates an instance of the SearchArgs class.

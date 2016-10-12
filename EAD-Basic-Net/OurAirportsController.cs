@@ -44,6 +44,12 @@ namespace eu.bayly.EADBasicNet {
     [CacheOutput(ClientTimeSpan = CacheDuration)]
     [ResponseType(typeof(Airport))]
     public IHttpActionResult GetAirport(string ident) {
+      if (string.IsNullOrEmpty(ident)) {
+        return BadRequest("ident is required.");
+      }
+
+      ident = ident.ToUpper();
+
       try {
         var db = new DataContext();
         var airport = db.Airports
@@ -54,6 +60,11 @@ namespace eu.bayly.EADBasicNet {
           .Include("Runways")
           .OrderBy(a => a.Name)
           .FirstOrDefault();
+
+        // Don't return a country value for every navaid
+        foreach (var navaid in airport.NavAids) {
+          navaid.Country = null;
+        }
 
         return Ok(airport);
 
@@ -91,6 +102,12 @@ namespace eu.bayly.EADBasicNet {
     [CacheOutput(ClientTimeSpan = CacheDuration)]
     [ResponseType(typeof(Country))]
     public IHttpActionResult GetCountry(string countryCode) {
+      if (string.IsNullOrEmpty(countryCode)) {
+        return BadRequest("countryCode is required.");
+      }
+
+      countryCode = countryCode.ToUpper();
+
       try {
         var db = new DataContext();
         var countries = db.Countries
@@ -107,17 +124,56 @@ namespace eu.bayly.EADBasicNet {
     }
 
     /// <summary>
+    /// Gets the specified navaid.
+    /// </summary>
+    /// <param name="ident">The navaid's ICAO ident.</param>
+    [HttpGet]
+    [CacheOutput(ClientTimeSpan = CacheDuration)]
+    [ResponseType(typeof(NavAid))]
+    public IHttpActionResult GetNavAid(string countryCode, string ident) {
+      if (string.IsNullOrEmpty(countryCode)) {
+        return BadRequest("countryCode is required.");
+      } else if (string.IsNullOrEmpty(ident)) {
+        return BadRequest("ident is required.");
+      }
+
+      countryCode = countryCode.ToUpper();
+      ident = ident.ToUpper();
+
+      try {
+        var db = new DataContext();
+        var navaid = db.NavAids
+          .Where(x => (x.CountryCode == countryCode) && (x.Ident == ident))
+          .Include("Country")
+          .OrderBy(a => a.Name)
+          .FirstOrDefault();
+
+        return Ok(navaid);
+
+      } catch (Exception ex) {
+        return InternalServerError(ex);
+
+      }
+    }
+
+    /// <summary>
     /// Gets the specified region.
     /// </summary>
-    /// <param name="code">The region's ISO code.</param>
+    /// <param name="regionCode">The region's ISO code.</param>
     [HttpGet]
     [CacheOutput(ClientTimeSpan = CacheDuration)]
     [ResponseType(typeof(Region))]
-    public IHttpActionResult GetRegion(string code) {
+    public IHttpActionResult GetRegion(string regionCode) {
+      if (string.IsNullOrEmpty(regionCode)) {
+        return BadRequest("regionCode is required.");
+      }
+
+      regionCode = regionCode.ToUpper();
+
       try {
         var db = new DataContext();
         var regions = db.Regions
-          .Where(x => x.Code == code)
+          .Where(x => x.Code == regionCode)
           .Include("Airports")
           .FirstOrDefault();
 
@@ -137,6 +193,12 @@ namespace eu.bayly.EADBasicNet {
     [CacheOutput(ClientTimeSpan = CacheDuration)]
     [ResponseType(typeof(Region[]))]
     public IHttpActionResult GetRegions(string countryCode) {
+      if (string.IsNullOrEmpty(countryCode)) {
+        return BadRequest("countryCode is required.");
+      }
+
+      countryCode = countryCode.ToUpper();
+
       try {
         var db = new DataContext();
         var regions = db.Regions
