@@ -231,9 +231,9 @@
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="connectionStrings.secret.config">
+    <None Include="connectionStrings.secret.config">
       <SubType>Designer</SubType>
-    </Content>
+    </None>
     <None Include="Properties\PublishProfiles\EAD-Basic-Net.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
