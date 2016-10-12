@@ -6,8 +6,8 @@ namespace eu.bayly.EADBasicNet.OurAirports {
   [Table("frequencies")]
   [Uri("http://ourairports.com/data/airport-frequencies.csv")]
   public class Frequency {
-    [ForeignKey("Ident")]
-    public Airport Airport { get; set; }
+    //[ForeignKey("Ident")]
+    //public Airport Airport { get; set; }
 
     [Column("description")]
     [Required(AllowEmptyStrings =true)]

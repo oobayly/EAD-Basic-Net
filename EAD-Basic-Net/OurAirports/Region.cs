@@ -40,8 +40,6 @@ namespace eu.bayly.EADBasicNet.OurAirports {
     [Required]
     public string Name { get; set; }
 
-    public ICollection<NavAid> NavAids { get; set; }
-
     [Column("wikipedia_link")]
     public string WikipediaLink { get; set; }
   }

@@ -7,8 +7,8 @@ namespace eu.bayly.EADBasicNet.OurAirports {
   [Uri("http://ourairports.com/data/runways.csv")]
   public class Runway {
     #region Properties
-    [ForeignKey("Ident")]
-    public Airport Airport { get; set; }
+    //[ForeignKey("Ident")]
+    //public Airport Airport { get; set; }
 
     [Column("closed")]
     [Required]

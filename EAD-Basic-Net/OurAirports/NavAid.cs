@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace eu.bayly.EADBasicNet.OurAirports {
+  //"A foreign key value cannot be inserted because a corresponding primary key value does not exist. [ Foreign key constraint name = FK_dbo.navaids_dbo.airports_ident ]"
   [Table("navaids")]
   [Uri("http://ourairports.com/data/navaids.csv")]
   public class NavAid {

@@ -24,7 +24,13 @@ namespace eu.bayly.EADBasicNet {
         routeTemplate: "api/{controller}/{action}"
         );
 
-      config.Formatters.JsonFormatter.SerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
+      config.Formatters.JsonFormatter.SerializerSettings = new JsonSerializerSettings() {
+        NullValueHandling = NullValueHandling.Ignore,
+        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+      };
+#if DEBUG
+      config.Formatters.JsonFormatter.SerializerSettings.Formatting = Formatting.Indented;
+#endif
       config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new StringEnumConverter());
     }
   }

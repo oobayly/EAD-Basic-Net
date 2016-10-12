@@ -1,4 +1,6 @@
-﻿using SQLite.CodeFirst;
+﻿#if SQLITE
+using SQLite.CodeFirst;
+#endif
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -11,36 +13,73 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace eu.bayly.EADBasicNet.OurAirports {
+  /// <summary>
+  /// The database context used for accessing the OurAirports data.
+  /// </summary>
+#if MYSQL
   [DbConfigurationType(typeof(MySql.Data.Entity.MySqlEFConfiguration))]
+#endif
   public class DataContext : DbContext {
+    /// <summary>
+    /// Gets or sets the Airports data.
+    /// </summary>
     public DbSet<Airport> Airports { get; set; }
 
+    /// <summary>
+    /// Gets or sets the Countries data.
+    /// </summary>
     public DbSet<Country> Countries { get; set; }
 
+    /// <summary>
+    /// Gets or sets the Frequencies data.
+    /// </summary>
     public DbSet<Frequency> Frequencies { get; set; }
 
+    /// <summary>
+    /// Gets or sets the NavAids data.
+    /// </summary>
     public DbSet<NavAid> NavAids { get; set; }
 
+    /// <summary>
+    /// Gets or sets the Regions data.
+    /// </summary>
     public DbSet<Region> Regions { get; set; }
 
+    /// <summary>
+    /// Gets or sets the Runways data.
+    /// </summary>
     public DbSet<Runway> Runways { get; set; }
 
-    public DataContext() : base() {
+    /// <summary>
+    /// Creates an instance of the DataContext class.
+    /// </summary>
+    public DataContext()
+      : base() {
       Configuration.LazyLoadingEnabled = false;
     }
 
+    /// <summary>
+    /// This method is called when the model for a derived context has been initialized.
+    /// </summary>
     protected override void OnModelCreating(DbModelBuilder modelBuilder) {
-      base.OnModelCreating(modelBuilder);
-
+#if SQLITE
+      Database.SetInitializer(new SqliteDropCreateDatabaseWhenModelChanges<DataContext>(modelBuilder));
+#elif (MYSQL || MSSQL)
       Database.SetInitializer(new DropCreateDatabaseIfModelChanges<DataContext>());
-      //var sqliteConnectionInitializer = new SqliteDropCreateDatabaseWhenModelChanges<TestContext>(modelBuilder);
-      //Database.SetInitializer(sqliteConnectionInitializer);
-      //Database.SetInitializer(new DropCreateDatabaseAlways<TestContext>());
+      // Make sure booleans are stored as bits
+      modelBuilder.Properties()
+            .Where(x => x.PropertyType == typeof(bool))
+            .Configure(x => x.HasColumnType("bit"));
+#endif
+
+      base.OnModelCreating(modelBuilder);
     }
 
-    protected DbSet<T> GetDbSet<T>() where T: class, new() {
+    /// <summary>
+    /// Gets the DbSet for the specified type.
+    /// </summary>
+    protected DbSet<T> GetDbSet<T>() where T : class, new() {
       // Find the property whose DbSet matches the type passed
-      DbSet<T> set = null;
       foreach (var prop in this.GetType().GetProperties()) {
         if (prop.PropertyType == typeof(DbSet<T>)) {
           return (DbSet<T>)prop.GetValue(this);
@@ -50,22 +89,125 @@ namespace eu.bayly.EADBasicNet.OurAirports {
       throw new ArgumentException("Type not found.", "T");
     }
 
-    public void Import<T>() where T : class, new() {
-      var req = (HttpWebRequest)HttpWebRequest.Create(typeof(T).GetCustomAttribute<UriAttribute>().Uri);
-      using (var resp = (HttpWebResponse)req.GetResponse()) {
-        using (var stream = resp.GetResponseStream()) {
-          Import<T>(stream);
-        }
-      }
+    /// <summary>
+    /// Clears the database and imports all the data.
+    /// </summary>
+    public void ImportAll(DirectoryInfo cacheDir = null) {
+      Frequencies.RemoveRange(Frequencies.ToArray());
+      Runways.RemoveRange(Runways.ToArray());
+      NavAids.RemoveRange(NavAids.ToArray());
+      Airports.RemoveRange(Airports.ToArray());
+      Regions.RemoveRange(Regions.ToArray());
+      Countries.RemoveRange(Countries.ToArray());
+      SaveChanges();
+
+      Import<Country>(cacheDir);
+      Import<Region>(cacheDir);
+      Import<Airport>(cacheDir);
+      Import<Frequency>(cacheDir);
+      Import<Runway>(cacheDir);
+      Import<NavAid>(cacheDir);
+      SaveChanges();
     }
 
+    /// <summary>
+    /// Imports data from OurAirports into the specified type.
+    /// </summary>
+    public void Import<T>(DirectoryInfo cacheDir = null) where T : class, new() {
+      var uri = typeof(T).GetCustomAttribute<UriAttribute>().Uri;
+
+      FileInfo localFile = null;
+      DateTime? lastModified = null;
+      if (cacheDir != null) {
+        localFile = new FileInfo(Path.Combine(cacheDir.FullName, uri.Segments.Last()));
+        if (localFile.Exists) {
+          lastModified = localFile.LastWriteTimeUtc;
+        }
+      }
+
+      var req = (HttpWebRequest)HttpWebRequest.Create(uri);
+      if (lastModified != null) {
+        req.IfModifiedSince = lastModified.Value;
+      }
+
+      HttpWebResponse resp = null;
+      try {
+        resp = (HttpWebResponse)req.GetResponse();
+        using (var stream = resp.GetResponseStream()) {
+          if (localFile == null) {
+            Import<T>(stream);
+            return;
+
+          } else {
+            using (var fs = localFile.OpenWrite()) {
+              stream.CopyTo(fs);
+            }
+
+            if (resp.LastModified != DateTime.MinValue) {
+              localFile.LastWriteTimeUtc = resp.LastModified.ToUniversalTime();
+            }
+
+            localFile.Refresh();
+
+          }
+        }
+
+      } catch (WebException ex) {
+        resp = (HttpWebResponse)(ex.Response);
+        if (resp.StatusCode != HttpStatusCode.NotModified) {
+          throw;
+        }
+
+      } finally {
+        if (resp != null)
+          resp.Dispose();
+
+      }
+
+      Import<T>(localFile);
+    }
+
+    /// <summary>
+    /// Imports data from a local file into the specified type.
+    /// </summary>
     public void Import<T>(FileInfo file) where T : class, new() {
       using (var fs = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read)) {
         Import<T>(fs);
       }
     }
 
-    public void Import<T>(Stream stream) where T : class, new() {
+    /// <summary>
+    /// Imports data from OurAirports into the specified type.
+    /// </summary>
+    public void Import(string type, DirectoryInfo cacheDir = null) {
+      switch (type) {
+        case "Airport":
+          Import<Airport>(cacheDir);
+          break;
+        case "Country":
+          Import<Country>(cacheDir);
+          break;
+        case "Frequency":
+          Import<Frequency>(cacheDir);
+          break;
+        case "NavAid":
+          Import<NavAid>(cacheDir);
+          break;
+        case "Region":
+          Import<Region>(cacheDir);
+          break;
+        case "Runway":
+          Import<Runway>(cacheDir);
+          break;
+        default:
+          throw new ArgumentException("'" + type + "' is not valid value.", "type");
+      }
+    }
+
+    /// <summary>
+    /// Imports data into the specified type.
+    /// </summary>
+    protected void Import<T>(Stream stream) where T : class, new() {
       // Properties, and the associated column mappings
       var props = typeof(T).GetProperties();
       var cols = new ColumnAttribute[props.Length];
@@ -115,10 +257,6 @@ namespace eu.bayly.EADBasicNet.OurAirports {
       set.RemoveRange(set.ToArray());
       set.AddRange(list);
       this.SaveChanges();
-      //foreach (var o in list) {
-      //  set.Add(o);
-      //  SaveChanges();
-      //}
     }
   }
 }
