@@ -15,26 +15,31 @@ namespace eu.bayly.EADBasicNet.OurAirports {
     /// <summary>
     /// Represents a type of Airport.
     /// </summary>
+    [Flags]
     public enum AirportTypes {
+      /// <summary>None</summary>
+      None = 0,
+      /// <summary>Any airport (used for searching)</summary>
+      Any = 0xff,
       /// <summary>Balloon Port</summary>
       [Description("Balloon Port")]
-      BalloonPort,
+      BalloonPort = 0x1,
       /// <summary>Closed</summary>
-      Closed,
+      Closed = 0x2,
       /// <summary>Heliport</summary>
-      Heliport,
+      Heliport = 0x4,
       /// <summary></summary>
       [Description("Large Airport")]
-      LargeAirport,
+      LargeAirport = 0x8,
       /// <summary>Medium Airport</summary>
       [Description("Medium Airport")]
-      MediumAirport,
+      MediumAirport = 0x10,
       /// <summary>Seaplane Base</summary>
       [Description("Seaplane Base")]
-      SeaplaneBase,
+      SeaplaneBase = 0x20,
       /// <summary>Small Airport</summary>
       [Description("Small Airport")]
-      SmallAirport
+      SmallAirport = 0x40
     }
     #endregion
 

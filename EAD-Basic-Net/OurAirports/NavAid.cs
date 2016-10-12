@@ -14,59 +14,74 @@ namespace eu.bayly.EADBasicNet.OurAirports {
     /// <summary>
     /// Represents the power of a NavAid.
     /// </summary>
+    [Flags]
     public enum NavAidPowers {
+      /// <summary>None</summary>
+      None = 0,
+      /// <summary>Any power (used for searching)</summary>
+      Any = 0xff,
       /// <summary>Unknown</summary>
-      Unknown,
+      Unknown = 0x1,
       /// <summary>Low</summary>
-      Low,
+      Low = 0x2,
       /// <summary>Medium</summary>
-      Medium,
+      Medium = 0x4,
       /// <summary>High</summary>
-      High
+      High = 0x8
     }
 
     /// <summary>
     /// Represents the type of NavAid.
     /// </summary>
+    [Flags]
     public enum NavAidTypes {
+      /// <summary>None</summary>
+      None = 0,
+      /// <summary>Any NavAid type (used for searching)</summary>
+      Any = 0xff,
       /// <summary>Distance measuring equipment</summary>
-      DME,
+      DME = 0x1,
       /// <summary>Non-directional beacon</summary>
-      NDB,
+      NDB = 0x2,
       /// <summary>Non-directional beacon &amp; distance measuring equipment</summary>
       [Description("NDB-DME")]
-      NDBDME,
+      NDBDME = 0x4,
       /// <summary>Tactical air navigation</summary>
-      TACAN,
+      TACAN = 0x8,
       /// <summary>VHF omni-directional radio range</summary>
-      VOR,
+      VOR = 0x10,
       /// <summary>VHF omni-directional radio range &amp; distance measuring equipment</summary>
       [Description("VOR-DME")]
-      VORDME,
+      VORDME = 0x20,
       /// <summary>VHF omni-directional radio range &amp; tactical air navigation</summary>
       [Description("")]
-      VORTAC
+      VORTAC = 0x40
     }
 
     /// <summary>
     /// Represents the usage type of a NavAid.
     /// </summary>
+    [Flags]
     public enum NavAidUsages {
+      /// <summary>None</summary>
+      None = 0,
+      /// <summary>Any NavAid usage type (used for searching)</summary>
+      Any = 0xff,
       /// <summary>Unknown</summary>
-      Unknown,
+      Unknown = 0x1,
       /// <summary>Low altitude.</summary>
       [Description("Low")]
-      Lo,
+      Lo = 0x2,
       /// <summary>High altitude.</summary>
       [Description("High")]
-      Hi,
+      Hi = 0x4,
       /// <summary>High &amp; Low altitude.</summary>
       [Description("High & Low")]
-      Both,
+      Both = 0x8,
       /// <summary>Area Navigation.</summary>
-      RNAV,
+      RNAV = 0x10,
       /// <summary>Terminal NavAid.</summary>
-      Terminal
+      Terminal = 0x20
     }
     #endregion
 

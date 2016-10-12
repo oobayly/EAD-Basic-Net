@@ -249,7 +249,7 @@ namespace eu.bayly.EADBasicNet {
     [HttpGet]
     [CacheOutput(ClientTimeSpan = CacheDuration)]
     [ResponseType(typeof(Airport[]))]
-    public IHttpActionResult SearchAirports([FromUri]SearchArgs args) {
+    public IHttpActionResult SearchAirports([FromUri]AirportSearchArgs args) {
       try {
         var db = new DataContext();
         var airports = db.Airports
@@ -259,13 +259,16 @@ namespace eu.bayly.EADBasicNet {
             && ((args.Ident == "") || (x.Ident == args.Ident))
             && ((args.Name == "") || (x.Name.Contains(args.Name)))
             && (x.Lat >= args.South) && (x.Lat <= args.North) && (x.Lon >= args.West) && (x.Lon <= args.East)
+            && ((args.HasScheduledService == null) || (x.ScheduledService == args.HasScheduledService))
+            && ((x.Type & args.Type) != Airport.AirportTypes.None)
             )
           .OrderBy(x => x.Name)
           .Select(x => new {
             Ident = x.Ident,
             Lat = x.Lat,
             Lon = x.Lon,
-            Name = x.Name
+            Name = x.Name,
+            Type = x.Type
           });
 
         return Ok(airports);
@@ -283,7 +286,7 @@ namespace eu.bayly.EADBasicNet {
     [HttpGet]
     [CacheOutput(ClientTimeSpan = CacheDuration)]
     [ResponseType(typeof(NavAid[]))]
-    public IHttpActionResult SearchNavAids([FromUri]SearchArgs args) {
+    public IHttpActionResult SearchNavAids([FromUri]NavAidSearchArgs args) {
       try {
         var db = new DataContext();
         var navaids = db.NavAids
@@ -292,6 +295,9 @@ namespace eu.bayly.EADBasicNet {
             && ((args.Ident == "") || (x.Ident == args.Ident))
             && ((args.Name == "") || (x.Name.Contains(args.Name)))
             && (x.Lat >= args.South) && (x.Lat <= args.North) && (x.Lon >= args.West) && (x.Lon <= args.East)
+            && ((x.Power & args.Power) != NavAid.NavAidPowers.None)
+            && ((x.Type & args.Type) != NavAid.NavAidTypes.None)
+            && ((x.UsageType & args.UsageType) != NavAid.NavAidUsages.None)
             )
           .OrderBy(a => a.Name)
           .Select(a => new {
