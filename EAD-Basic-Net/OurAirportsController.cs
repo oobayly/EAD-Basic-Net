@@ -234,7 +234,7 @@ namespace eu.bayly.EADBasicNet {
     /// Imports the data.
     /// </summary>
     [HttpGet]
-    public async Task<IHttpActionResult> ImportAsync(string type) {
+    public IHttpActionResult ImportAsync(string type) {
       var appData = GetAppData();
       HostingEnvironment.QueueBackgroundWorkItem(ct => ImportAsync(ct, appData, type));
       return Ok();
