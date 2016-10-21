@@ -8,8 +8,6 @@ namespace eu.bayly.EADBasicNet.OurAirports {
   /// Represents OurAirport search arguments for an airport.
   /// </summary>
   public class AirportSearchArgs : SearchArgs {
-    private string regionCode;
-
     /// <summary>
     /// Gets or sets whether the airport should have a scheduled service.
     /// </summary>
@@ -18,16 +16,7 @@ namespace eu.bayly.EADBasicNet.OurAirports {
     /// <summary>
     /// Gets or sets the region code to be searched for.
     /// </summary>
-    public string RegionCode {
-      get {
-        return regionCode;
-      }
-      set {
-        if (value != null)
-          value = value.ToUpper();
-        regionCode = value;
-      }
-    }
+    public string RegionCode { get; set; }
 
     /// <summary>
     /// Gets or sets the type of airport to search for.
@@ -67,21 +56,10 @@ namespace eu.bayly.EADBasicNet.OurAirports {
   /// Represents OurAirport search arguments for an airport or navaid.
   /// </summary>
   public abstract class SearchArgs {
-    private string countryCode, ident;
-
     /// <summary>
     /// Gets or sets the country code to be searched for.
     /// </summary>
-    public string CountryCode {
-      get {
-        return countryCode;
-      }
-      set {
-        if (value != null)
-          value = value.ToUpper();
-        countryCode = value;
-      }
-    }
+    public string CountryCode { get; set; }
 
     /// <summary>
     /// Gets or sets most Easterly point to search for.
@@ -91,16 +69,12 @@ namespace eu.bayly.EADBasicNet.OurAirports {
     /// <summary>
     /// Gets or sets the ident to be searched for.
     /// </summary>
-    public string Ident {
-      get {
-        return ident;
-      }
-      set {
-        if (value != null)
-          value = value.ToUpper();
-        ident = value;
-      }
-    }
+    public string Ident { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ident or name to be searched for.
+    /// </summary>
+    public string IdentOrName { get; set; }
 
     /// <summary>
     /// Gets or sets the name to be searched for.
@@ -128,6 +102,7 @@ namespace eu.bayly.EADBasicNet.OurAirports {
     public SearchArgs() {
       CountryCode = "";
       Ident = "";
+      IdentOrName = "";
       North = 90;
       South = -90;
       East = 180;
