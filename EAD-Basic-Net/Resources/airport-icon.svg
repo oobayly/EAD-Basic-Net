@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="16"
+   height="16"
+   viewBox="0 0 16 16"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r"
+   sodipodi:docname="airport-icon.svg"
+   class="">
+  <defs
+     id="defs4">
+    <style
+       type="text/css"
+       id="style4"><![CDATA[
+.lyrBase {
+	display: none;
+	fill:#ffffff;
+	fill-opacity:1;
+	stroke:#757575;
+	stroke-width:1;
+	stroke-miterlimit:4;
+	stroke-dasharray:none;
+	stroke-opacity:1;
+}
+
+.lyrSmallAirport, .lyrClosed, .lyrSeaplaneBase, .lyrHeliport, .lyrMediumAirport, .lyrLargeAirport {
+	display: none;
+	fill:#757575;
+	fill-opacity:1;
+	stroke:none;
+	stroke-width:1;
+	stroke-miterlimit:4;
+	stroke-dasharray:none;
+	stroke-opacity:1
+}
+
+.lyrRunways {
+  display: none;
+}
+
+.mediumStar, .largeStar {
+	display:inline;
+	fill:#ffffff;
+	fill-opacity:1;
+	stroke:#757575;
+	stroke-width:0.18782732;
+	stroke-miterlimit:4;
+	stroke-dasharray:none;
+	stroke-opacity:1
+}
+
+.gRunwaysBG {
+	display:none;
+	fill:none;
+	stroke:#757575;
+	stroke-linecap:square;
+	stroke-miterlimit:4;
+	stroke-dasharray:none;
+	stroke-opacity:1;
+	stroke-width:2;
+}
+
+.gRunways {
+	display:inline;
+	fill:none;
+	stroke:#ffffff;
+	stroke-linecap:butt;
+	stroke-linejoin:miter;
+	stroke-miterlimit:4;
+	stroke-dasharray:none;
+	stroke-width:1;
+}
+
+svg.no-tower .lyrBase, svg.no-tower .mediumStar, svg.no-tower .largeStar, svg.no-tower .gRunwaysBG {
+	stroke: #ff00ff !important;
+}
+svg.has-tower .lyrBase, svg.has-tower .mediumStar, svg.has-tower .largeStar, svg.has-tower .gRunwaysBG {
+	stroke: #0000ff !important;
+}
+
+svg.no-tower .lyrSmallAirport, svg.no-tower .lyrClosed, svg.no-tower .lyrSeaplaneBase, svg.no-tower .lyrHeliport, svg.no-tower .lyrMediumAirport {
+	fill:#ff00ff !important;
+}
+svg.has-tower .lyrSmallAirport, svg.has-tower .lyrClosed, svg.has-tower .lyrSeaplaneBase, svg.has-tower .lyrHeliport, svg.has-tower .lyrMediumAirport {
+	fill:#0000ff !important;
+}
+
+svg.balloonport .lyrBase, svg.balloonport .lyrSmallAirport, svg.smallairport .lyrBase, svg.smallairport .lyrSmallAirport,
+svg.closed .lyrBase, svg.closed .lyrClosed,
+svg.seaplanebase .lyrBase, svg.seaplanebase .lyrSmallAirport, svg.seaplanebase .lyrSeaplaneBase,
+svg.heliport .lyrBase, svg.heliport .lyrHeliport,
+svg.mediumairport .lyrMediumAirport, svg.mediumairport .lyrRunways,
+svg.largeairport .lyrLargeAirport, svg.largeairport .lyrRunways, svg.largeairport .gRunwaysBG
+{
+	display: inline;
+}
+]]></style>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="54.5"
+     inkscape:cx="2.8738905"
+     inkscape:cy="8.0969298"
+     inkscape:document-units="px"
+     inkscape:current-layer="lyrBase"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1053"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="lyrBase"
+     class="lyrBase"
+     inkscape:label="Base">
+    <circle
+       id="path4140"
+       cx="8"
+       cy="8"
+       r="6"
+       style="fill:none" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="lyrSmallAirport"
+     class="lyrSmallAirport"
+     inkscape:label="SmallAirport">
+    <rect
+       id="rect4177"
+       width="2"
+       height="2"
+       x="7"
+       y="14"
+       inkscape:transform-center-y="7"
+       inkscape:tile-cx="8"
+       inkscape:tile-cy="8"
+       inkscape:tile-w="2"
+       inkscape:tile-h="2"
+       inkscape:tile-x0="7"
+       inkscape:tile-y0="14" />
+    <use
+       x="0"
+       y="0"
+       inkscape:tiled-clone-of="#rect4177"
+       xlink:href="#rect4177"
+       transform="matrix(0,1,-1,0,16,0)"
+       id="use4199"
+       inkscape:transform-center-x="7"
+       width="100%"
+       height="100%" />
+    <use
+       x="0"
+       y="0"
+       inkscape:tiled-clone-of="#rect4177"
+       xlink:href="#rect4177"
+       transform="matrix(-1,0,0,-1,16,16)"
+       id="use4201"
+       inkscape:transform-center-y="-7"
+       width="100%"
+       height="100%" />
+    <use
+       x="0"
+       y="0"
+       inkscape:tiled-clone-of="#rect4177"
+       xlink:href="#rect4177"
+       transform="matrix(0,-1,1,0,0,16)"
+       id="use4203"
+       inkscape:transform-center-x="-7"
+       width="100%"
+       height="100%" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="lyrClosed"
+     class="lyrClosed"
+     inkscape:label="Closed">
+    <rect
+       id="rect4240"
+       width="20"
+       height="1"
+       x="1.3137088"
+       y="-0.49999949"
+       transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)" />
+    <use
+       x="0"
+       y="0"
+       xlink:href="#rect4240"
+       id="use4244"
+       transform="matrix(0,-1,1,0,-7e-7,16)"
+       width="100%"
+       height="100%" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="lyrSeaplaneBase"
+     class="lyrSeaplaneBase"
+     inkscape:label="SeaplaneBase">
+    <g
+       id="text4205">
+      <path
+         d="m 7.2654953,5.2572983 q 0,0.2145744 0.1045362,0.4126431 0.1100382,0.1980687 0.3081069,0.3081069 0.1980687,0.1045363 0.4071412,0.1045363 0.2200763,0 0.4126431,-0.1045363 0.1980687,-0.1100382 0.3081069,-0.3081069 0.1100381,-0.1980687 0.1100381,-0.4126431 0,-0.2200763 -0.11554,-0.418145 Q 8.6904895,4.6410846 8.4924208,4.5365483 8.299854,4.4265102 8.0852796,4.4265102 q -0.2035706,0 -0.4016393,0.1100381 Q 7.4855716,4.6410846 7.3755334,4.8391533 7.2654953,5.037222 7.2654953,5.2572983 Z m 1.2489331,6.8993927 0,0.0055 -0.044015,0 q -0.2035706,0.01651 -0.4181451,0.01651 -0.016506,0 -0.033011,-0.0055 l 0,-0.011 -0.038513,0 0,0.011 -0.038513,0 q -0.9298225,0 -1.7826183,-0.264092 Q 5.3123191,11.645018 4.839155,11.16085 4.751125,11.06732 4.6795997,10.979287 L 4.2009324,11.336907 4.041377,9.5157753 5.7304629,10.198012 5.2517968,10.550134 q 0,0 0.033011,0.03301 0.4016393,0.484167 1.1278912,0.753761 0.599708,0.220076 1.2434312,0.25859 l 0,-3.9833819 -2.0632156,0 0,-0.7097462 2.0632156,0 0,-0.2805973 Q 7.5130811,6.5777563 7.3755334,6.5007296 7.0344151,6.3136647 6.8473502,5.9725464 6.6602853,5.6314281 6.6602853,5.2572983 q 0,-0.3741297 0.1870649,-0.7152481 Q 7.039917,4.19543 7.3810353,4.0083651 7.7276555,3.8213003 8.0852796,3.8213003 q 0.3631259,0 0.7042442,0.1870648 0.3411184,0.1870649 0.5336851,0.5336851 0.1980687,0.3411184 0.1980687,0.7152481 0,0.3741298 -0.1925668,0.7152481 Q 9.141646,6.3136647 8.8060296,6.5007296 8.657478,6.5777563 8.5144284,6.6272735 l 0,0.2750954 2.0081966,0 0,0.7097462 -2.0081966,0 0,3.9668759 q 0.5501909,-0.05502 1.0673702,-0.242084 0.7262524,-0.269594 1.1333934,-0.753761 0.011,-0.01651 0.02751,-0.03301 L 10.264035,10.198012 11.958623,9.5157753 11.793566,11.336907 11.3149,10.979283 q -0.06602,0.08803 -0.159556,0.181563 -0.473164,0.484168 -1.3259595,0.753761 -0.6327194,0.192567 -1.3149561,0.242084 z"
+         id="path4231"
+         inkscape:connector-curvature="0" />
+    </g>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="lyrHeliport"
+     class="lyrHeliport"
+     inkscape:label="Heliport">
+    <g
+       id="text4233">
+      <path
+         d="m 4.9667989,4.0205889 1.0768131,0 0,3.2624237 3.9127761,0 0,-3.2624237 1.0768129,0 0,7.9588211 -1.0768129,0 0,-3.7901686 -3.9127761,0 0,3.7901686 -1.0768131,0 0,-7.9588211 z"
+         id="path4238"
+         inkscape:connector-curvature="0" />
+    </g>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="lyrMediumAirport"
+     class="lyrMediumAirport"
+     inkscape:label="MediumAirport">
+    <path
+       sodipodi:type="star"
+       id="mediumStar"
+       class="mediumStar"
+       sodipodi:sides="5"
+       sodipodi:cx="8"
+       sodipodi:cy="1.568602"
+       sodipodi:r1="1.298049"
+       sodipodi:r2="0.51921964"
+       sodipodi:arg1="-1.5707963"
+       sodipodi:arg2="-0.9424778"
+       inkscape:flatsided="false"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="M 8,0.27055299 8.3051896,1.1485445 9.2345179,1.1674828 8.4938072,1.7290497 8.762974,2.6187457 8,2.0878216 7.2370259,2.6187456 7.5061928,1.7290497 6.7654821,1.1674827 7.6948104,1.1485445 Z"
+       inkscape:transform-center-y="-0.12395244" />
+    <rect
+       id="rect4273"
+       width="2.5"
+       height="2"
+       x="0.5"
+       y="7.5"
+       inkscape:transform-center-x="6.25" />
+    <use
+       x="0"
+       y="0"
+       xlink:href="#rect4273"
+       inkscape:transform-center-x="-6.25"
+       id="use4279"
+       transform="matrix(-1,0,0,-1,16,17)"
+       width="100%"
+       height="100%" />
+    <use
+       x="0"
+       y="0"
+       xlink:href="#rect4273"
+       id="use4283"
+       transform="matrix(0,-1,1,0,-0.50000009,16.5)"
+       width="100%"
+       height="100%"
+       inkscape:transform-center-y="6.25" />
+    <circle
+       id="path4271"
+       cx="8"
+       cy="8.5"
+       r="6" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="lyrLargeAirport"
+     class="lyrLargeAirport"
+     inkscape:label="LargeAirport">
+    <path
+       sodipodi:type="star"
+       id="largeStar"
+       class="largeStar"
+       sodipodi:sides="5"
+       sodipodi:cx="14.422807"
+       sodipodi:cy="1.6583592"
+       sodipodi:r1="1.3723248"
+       sodipodi:r2="0.54892999"
+       sodipodi:arg1="-1.5707963"
+       sodipodi:arg2="-0.9424778"
+       inkscape:flatsided="false"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="M 14.422807,0.28603435 14.74546,1.2142655 15.727965,1.2342875 14.94487,1.8279879 15.229439,2.7685933 14.422807,2.2072892 13.616174,2.7685933 13.900743,1.8279879 13.117648,1.2342874 14.100154,1.2142655 Z"
+       inkscape:transform-center-y="-0.13104507" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="lyrRunways"
+     class="lyrRunways"
+     inkscape:label="Runways">
+    <g
+       id="gRunwaysBG" class="gRunwaysBG" />
+    <g
+       id="gRunways" class="gRunways" />
+  </g>
+</svg>

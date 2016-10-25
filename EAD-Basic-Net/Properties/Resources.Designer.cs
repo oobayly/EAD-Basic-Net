@@ -59,5 +59,15 @@ namespace eu.bayly.EADBasicNet.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] airport_icon {
+            get {
+                object obj = ResourceManager.GetObject("airport_icon", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

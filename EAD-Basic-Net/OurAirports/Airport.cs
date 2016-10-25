@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Drawing;
+using System.Linq;
+using System.Xml;
 
 namespace eu.bayly.EADBasicNet.OurAirports {
   /// <summary>
@@ -72,6 +75,15 @@ namespace eu.bayly.EADBasicNet.OurAirports {
     /// Gets or sets the list of the airport's radio frequencies.
     /// </summary>
     public ICollection<Frequency> Frequencies { get; set; }
+
+    /// <summary>
+    /// Gets whether the airport has a tower.
+    /// </summary>
+    public bool HasTower {
+      get {
+        return (Frequencies != null) && Frequencies.Any(f => f.Type == "TWR");
+      }
+    }
 
     /// <summary>
     /// Gets or sets the airport's 3-character IATA code'
@@ -184,6 +196,73 @@ namespace eu.bayly.EADBasicNet.OurAirports {
     /// </summary>
     [Column("wikipedia_link")]
     public string WikipediaLink { get; set; }
+    #endregion
+
+    #region Methods
+    private static PointF GetXY(double lat,  double lon) {
+      return new PointF(
+        (float)(65536 * ((Math.PI * lon / 180) + Math.PI) / Math.PI),
+        (float)(65536 * (Math.PI - Math.Log(Math.Tan((Math.PI / 4) + (lat * Math.PI / 360)))) / Math.PI)
+        );
+    }
+
+    /// <summary>
+    /// Generate the icon for the airport.
+    /// </summary>
+    public XmlDocument GenerateIcon() {
+      var doc = new System.Xml.XmlDocument();
+      doc.LoadXml(System.Text.Encoding.UTF8.GetString(Properties.Resources.airport_icon));
+
+      var root = doc.DocumentElement;
+
+      var lyrRunways = (XmlElement)root.SelectSingleNode("//*[@id='lyrRunways']");
+      var gRunways = (XmlElement)root.SelectSingleNode("//*[@id='gRunways']");
+      var gRunwaysBG = (XmlElement)root.SelectSingleNode("//*[@id='gRunwaysBG']");
+
+      var c = GetXY(Lat, Lon);
+      double dist = 0;
+
+      foreach (var rway in Runways) {
+        if (rway.Closed || (rway.HighLat == null) || (rway.LowLat == null))
+          continue;
+
+        var h = GetXY(rway.HighLat.Value, rway.HighLon.Value);
+        var l = GetXY(rway.LowLat.Value, rway.LowLon.Value);
+
+        var dh = new PointF(h.X - c.X, h.Y - c.Y);
+        var dl = new PointF(l.X - c.X, l.Y - c.Y);
+
+        var disth = Math.Sqrt((dh.X * dh.X) + (dh.Y * dh.Y));
+        var distl = Math.Sqrt((dl.X * dl.X) + (dl.Y * dl.Y));
+        if (disth > dist) dist = disth;
+        if (distl > dist) dist = distl;
+
+        XmlElement elem;
+        var path = string.Format("M {0},{1} {2},{3}", dh.X, dh.Y, dl.X, dl.Y);
+        elem = doc.CreateElement("path", doc.DocumentElement.NamespaceURI);
+        elem.SetAttribute("d", path);
+        gRunwaysBG.AppendChild(elem);
+
+        elem = doc.CreateElement("path", doc.DocumentElement.NamespaceURI);
+        elem.SetAttribute("d", path);
+        gRunways.AppendChild(elem);
+      }
+
+      double scale;
+      if (Type == AirportTypes.LargeAirport) {
+        scale = 15 / (2 * dist);
+      } else {
+        scale = 11 / (2 * dist);
+      }
+      gRunwaysBG.SetAttribute("style", string.Format("stroke-width: {0};", 2.5 / scale));
+      gRunways.SetAttribute("style", string.Format("stroke-width: {0};", 1 / scale));
+
+      lyrRunways.SetAttribute("transform", string.Format("matrix({0},0,0,{0},8,8.5)", scale));
+
+      doc.DocumentElement.SetAttribute("class", Type.ToString().ToLower() + " " + (HasTower ? "has-tower" : "no-tower"));
+
+      return doc;
+    }
     #endregion
   }
 }

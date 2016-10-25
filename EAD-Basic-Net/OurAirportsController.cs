@@ -5,6 +5,7 @@ using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,7 +41,7 @@ namespace eu.bayly.EADBasicNet {
       }
     }
     #endregion
-    
+
     #region Web methods
     /// <summary>
     /// Gets the specified airport.
@@ -127,6 +128,38 @@ namespace eu.bayly.EADBasicNet {
         return InternalServerError(ex);
 
       }
+    }
+
+    /// <summary>
+    /// Gets the icon for the specified airport.
+    /// </summary>
+    /// <param name="ident">The airport's ICAO ident.</param>
+    [HttpGet]
+    [CacheOutput(ClientTimeSpan = CacheDuration)]
+    public HttpResponseMessage GetIcon(string ident) {
+      if (string.IsNullOrEmpty(ident)) {
+        return new HttpResponseMessage(HttpStatusCode.BadRequest); //BadRequest("ident is required.");
+      }
+
+      Airport airport;
+      var db = new DataContext();
+      airport = db.Airports
+        .Where(x => x.Ident == ident)
+        .Include("Frequencies")
+        .Include("Runways")
+        .OrderBy(a => a.Name)
+        .FirstOrDefault();
+
+      var svg = airport.GenerateIcon();
+      var ms = new MemoryStream();
+      svg.Save(ms);
+      ms.Position = 0;
+
+      var resp = new HttpResponseMessage(HttpStatusCode.OK);
+      resp.Content = new StreamContent(ms);
+      resp.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/svg+xml");
+
+      return resp;
     }
 
     /// <summary>
@@ -273,16 +306,19 @@ namespace eu.bayly.EADBasicNet {
             && ((args.HasScheduledService == null) || (x.ScheduledService == args.HasScheduledService))
             && ((x.Type & args.Type) != Airport.AirportTypes.None)
             )
+          .Include("Frequencies")
           .OrderBy(x => x.Name)
-          .Select(x => new {
-            Ident = x.Ident,
-            Lat = x.Lat,
-            Lon = x.Lon,
-            Name = x.Name,
-            Type = x.Type
-          });
+          .ToList();
 
-        return Ok(airports);
+        return Ok(airports.Select(x => new {
+          Ident = x.Ident,
+          Lat = x.Lat,
+          Lon = x.Lon,
+          Name = x.Name,
+          Type = x.Type,
+          Frequencies = x.Frequencies,
+          HasTower = x.HasTower
+        }));
 
       } catch (Exception ex) {
         return InternalServerError(ex);
