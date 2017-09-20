@@ -22,6 +22,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>801db84c</NuGetPackageImportStamp>
     <TargetFrameworkProfile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -210,6 +211,7 @@
     <Content Include="Global.asax" />
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\TestClientReferences.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\TestClientDialogs.cshtml" />
+    <Content Include="App_Data\.placeholder" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
     <Content Include="Resources\airport-icon.svg" />
     <Content Include="Scripts\jquery-3.1.1.js" />
@@ -231,9 +233,9 @@
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
-    <None Include="connectionStrings.secret.config">
+    <Content Include="connectionStrings.secret.config">
       <SubType>Designer</SubType>
-    </None>
+    </Content>
     <None Include="Properties\PublishProfiles\EAD-Basic-Net.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -375,9 +377,7 @@
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
