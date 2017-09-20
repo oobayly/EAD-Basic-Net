@@ -79,7 +79,7 @@ namespace eu.bayly.EADBasicNet.OpenFlights {
     /// <summary>
     /// Gets or sets the timezone offset for the airport.
     /// </summary>
-    public float UTCOffset { get; set; }
+    public float? UTCOffset { get; set; }
     #endregion
 
     #region Constructors
@@ -118,20 +118,28 @@ namespace eu.bayly.EADBasicNet.OpenFlights {
           Lat = double.Parse(line[6]),
           Lon = double.Parse(line[7]),
           Alt = int.Parse(line[8]),
-          UTCOffset = float.Parse(line[9]),
+          //UTCOffset = float.Parse(line[9]),
           //DST,
-          TZ = line[11],
+          TZ = line[11] == "\\N" ? null : line[11],
         };
 
-        if (!string.IsNullOrEmpty(line[4]))
+        if (!string.IsNullOrEmpty(line[4]) && (line[4] != "\\N"))
           item.IATA = line[4];
 
         if (!string.IsNullOrEmpty(line[5]))
           item.ICAO = line[5];
 
+        float offset;
+        if (float.TryParse(line[9], out offset)) {
+          item.UTCOffset = offset;
+        }
+
         DST dst;
-        if (!Enum.TryParse<DST>(line[10], out dst))
-          dst = DST.U;
+        if (!Enum.TryParse<DST>(line[10], out dst)) {
+          item.DST = dst;
+        } else {
+          item.DST = DST.U;
+        }
 
         if ((match == null) || match.Invoke(item))
           list.Add(item);
