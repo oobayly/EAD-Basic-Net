@@ -16,6 +16,15 @@ namespace eu.bayly.EADBasicNet {
   public class OpenFlightsController : ApiControllerBase {
     #region Properties
     /// <summary>
+    /// Gets the airports file.
+    /// </summary>
+    private FileInfo AirportsFile {
+      get {
+        return new FileInfo(Path.Combine(GetAppData().FullName, "airports.txt"));
+      }
+    }
+
+    /// <summary>
     /// Gets the namespace.
     /// </summary>
     protected override string Namespace {
@@ -30,6 +39,16 @@ namespace eu.bayly.EADBasicNet {
 
     #region Web methods
     /// <summary>
+    /// Gets whether the data exists.
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    [ResponseType(typeof(bool))]
+    public IHttpActionResult Exists() {
+      return Ok(AirportsFile.Exists);
+    }
+
+    /// <summary>
     /// Gets the list of airports.
     /// </summary>
     [HttpGet]
@@ -42,10 +61,7 @@ namespace eu.bayly.EADBasicNet {
         icao = icao.ToUpper();
 
       try {
-        var appData = GetAppData();
-        var file = new FileInfo(Path.Combine(appData.FullName, "airports.txt"));
-
-        IEnumerable<Airport> list = Airport.FromOpenFlights(file,
+        IEnumerable<Airport> list = Airport.FromOpenFlights(AirportsFile,
           s => ((country == null) || (s.Country == country)) && ((icao == null) || (s.ICAO == icao))
           );
 
@@ -65,11 +81,8 @@ namespace eu.bayly.EADBasicNet {
     [ResponseType(typeof(string[]))]
     public IHttpActionResult GetCountries() {
       try {
-        var appData = GetAppData();
-        var file = new FileInfo(Path.Combine(appData.FullName, "airports.txt"));
-
         var list = (
-        from a in Airport.FromOpenFlights(file)
+        from a in Airport.FromOpenFlights(AirportsFile)
         orderby a.Country
         select a.Country
         ).Distinct();
